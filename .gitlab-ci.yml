@@ -2,4 +2,4 @@ all_tests:
         script:
                 - npm install grunt
                 - npm install
-                - npm run grunt test
+                - grunt test
