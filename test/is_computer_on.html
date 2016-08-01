@@ -6,10 +6,14 @@
 
   <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.0.1.css">
   <script src="https://code.jquery.com/qunit/qunit-2.0.1.js"></script>
+  <script src="../src/test.js"></script>
 
   <script>
   QUnit.test("is computer on?", function( assert ) {
     assert.equal(true, true);
+  });
+  QUnit.test("is computer on fire?", function( assert ) {
+    assert.equal(is_computer_on_fire(), false);
   });
   </script>
 </head>

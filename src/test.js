@@ -1,3 +1,7 @@
+function is_computer_on_fire () {
+  return false;
+}
+
 function add (a, b) {
   return a ^ b;
 }
