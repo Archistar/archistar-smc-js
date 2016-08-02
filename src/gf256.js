@@ -4,13 +4,16 @@ https://github.com/Archistar/archistar-smc/blob/master/src/main/java/at/archista
 
 the lookup tables from the original are pregenerated into a separate file
 */
+
 var gf256 = gf256 || {};
 
 gf256.add = function (a, b) {
+  'use strict';
   return a ^ b;
 };
 
 gf256.sub = function (a, b) {
+  'use strict';
   return a ^ b;
 };
 
@@ -19,6 +22,7 @@ gf256.mult = function (a, b) {
 };
 
 gf256.pow = function (a, p) {
+  'use strict';
   if (a === 0 && p !== 0) {
     return 0;
   } else {
@@ -27,10 +31,12 @@ gf256.pow = function (a, p) {
 };
 
 gf256.inverse = function (a) {
- return alogtable[255 - (logtable[a] % 255)];
+  'use strict';
+  return alogtable[255 - (logtable[a] % 255)];
 };
 
 gf256.div = function (a, b) {
+  'use strict';
   if (b === 0) {
     throw "Division by Zero";
   }
@@ -38,10 +44,11 @@ gf256.div = function (a, b) {
 };
 
 gf256.evaluateAt = function (coeffs, x) {
+  'use strict';
   var degree = coeffs.length - 1;
   var result = coeffs[degree];
 
-  for (var i = degree - 1; i >= 0; i--){
+  for (let i = degree - 1; i >= 0; i--){
     result = add(mult(result, x), coeffs[i]);
   }
   return result;
