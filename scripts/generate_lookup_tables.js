@@ -1,3 +1,11 @@
+/*
+this little script generates the logarithmic lookup tables for GF256;
+it is a direct translation of the java version:
+https://github.com/Archistar/archistar-smc/blob/master/src/main/java/at/archistar/crypto/math/gf256/GF256.java#L49
+
+the idea is to use it as input for a template that generates a .js file
+*/
+
 var logtable = new Int16Array(256);
 var alogtable = new Int16Array(1025);
 var genpoly = 0x11D;
