@@ -45,8 +45,8 @@ gf256.div = function (a, b) {
 
 gf256.evaluateAt = function (coeffs, x) {
   'use strict';
-  var degree = coeffs.length - 1;
-  var result = coeffs[degree];
+  let degree = coeffs.length - 1;
+  let result = coeffs[degree];
 
   for (let i = degree - 1; i >= 0; i--){
     result = add(mult(result, x), coeffs[i]);
