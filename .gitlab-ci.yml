@@ -1,0 +1,5 @@
+all_tests:
+        script:
+                - npm install grunt
+                - npm install
+                - grunt test
