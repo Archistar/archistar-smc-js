@@ -8,15 +8,15 @@ var gf256 = gf256 || {};
 
 gf256.add = function (a, b) {
   return a ^ b;
-}
+};
 
 gf256.sub = function (a, b) {
   return a ^ b;
-}
+};
 
 gf256.mult = function (a, b) {
  return gf256.alogtable(gf256.logtable[a] + gf256.logtable[b]);
-}
+};
 
 gf256.pow = function (a, p) {
   if (a === 0 && p !== 0) {
@@ -24,18 +24,18 @@ gf256.pow = function (a, p) {
   } else {
     return alogtable[p*logtable[a] % 255];
   }
-}
+};
 
 gf256.inverse = function (a) {
  return alogtable[255 - (logtable[a] % 255)];
-}
+};
 
 gf256.div = function (a, b) {
   if (b === 0) {
     throw "Division by Zero";
   }
   return alogtable[logtable[a] + 255 - logtable[b]];
-}
+};
 
 gf256.evaluateAt = function (coeffs, x) {
   var degree = coeffs.length - 1;
@@ -45,4 +45,4 @@ gf256.evaluateAt = function (coeffs, x) {
     result = add(mult(result, x), coeffs[i]);
   }
   return result;
-}
+};
