@@ -49,7 +49,7 @@ gf256.evaluateAt = function (coeffs, x) {
   var result = coeffs[degree];
 
   for (var i = degree - 1; i >= 0; i--){
-    result = add(mult(result, x), coeffs[i]);
+    result = gf256.add(gf256.mult(result, x), coeffs[i]);
   }
   return result;
 };
