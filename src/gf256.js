@@ -18,7 +18,7 @@ gf256.sub = function (a, b) {
 };
 
 gf256.mult = function (a, b) {
- return gf256.alogtable(gf256.logtable[a] + gf256.logtable[b]);
+ return gf256.alogtable[gf256.logtable[a] + gf256.logtable[b]];
 };
 
 gf256.pow = function (a, p) {
@@ -26,13 +26,13 @@ gf256.pow = function (a, p) {
   if (a === 0 && p !== 0) {
     return 0;
   } else {
-    return alogtable[p*logtable[a] % 255];
+    return gf256.alogtable[p*gf256.logtable[a] % 255];
   }
 };
 
 gf256.inverse = function (a) {
   'use strict';
-  return alogtable[255 - (logtable[a] % 255)];
+  return gf256.alogtable[255 - (gf256.logtable[a] % 255)];
 };
 
 gf256.div = function (a, b) {
@@ -40,7 +40,7 @@ gf256.div = function (a, b) {
   if (b === 0) {
     throw "Division by Zero";
   }
-  return alogtable[logtable[a] + 255 - logtable[b]];
+  return gf256.alogtable[gf256.logtable[a] + 255 - gf256.logtable[b]];
 };
 
 gf256.evaluateAt = function (coeffs, x) {
