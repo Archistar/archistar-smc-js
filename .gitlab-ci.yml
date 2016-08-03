@@ -1,5 +1,6 @@
+image: git.prismacloud.eu:8010/archistar/javascripttest:latest
+
 all_tests:
         script:
-                - npm install grunt
                 - npm install
                 - grunt test
