@@ -124,3 +124,26 @@ matrix.multiply = function (a, b) {
 
   return res;
 };
+
+matrix.multiply_vector = function (m, v) {
+  var res = [];
+  for (var i = 0; i < v.length; i++) {
+    var tmp = 0;
+    for (var j = 0; j < v.length; j++) {
+      tmp = gf256.add(tmp, gf256.mult(m[i][j], v[j]));
+    }
+    res[i] = tmp;
+  }
+  return res;
+};
+
+matrix.generate_decoder = function (size, values) {
+  var res = [];
+  for (var i = 0; i < size; i++) {
+    res[i] = [];
+    for (var j = 0; j < size; j++) {
+      res[i][j] = gf256.pow(values[i], j);
+    }
+  }
+  return matrix.inverse(res);
+};
