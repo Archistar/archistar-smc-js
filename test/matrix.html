@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Matrix Tests</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.0.1.css">
+</head>
+
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="https://code.jquery.com/qunit/qunit-2.0.1.js"></script>
+  <script src="../src/table.js"></script>
+  <script src="../src/gf256.js"></script>
+  <script src="../src/matrix.js"></script>
+  <script>
+    QUnit.test("does it even work?", function(assert) {
+      'use strict';
+      assert.deepEqual([1], [1]);
+      assert.deepEqual(matrix.inverse([]), ([]));
+      assert.ok(matrix.is_identity(matrix.generate_identity(3)));
+      var t1 = [[1,2],[2,3]];
+      assert.ok(matrix.is_identity(matrix.multiply(t1, matrix.inverse(t1))));
+    });
+  </script>
+</body>
+</html>
