@@ -38,6 +38,7 @@ rabin_ids.Configuration = function (shares, quorum, random) {
     return shs;
   };
   this.decode = function (shs) {
+    'use strict';
     var xvalues = [];
     for (var i0 = 0; i0 < shs.length; i0++) {xvalues[i0] = shs[i0].degree;}
     var decoder = matrix.generate_decoder(this.quorum, xvalues);
