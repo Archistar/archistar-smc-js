@@ -5,6 +5,7 @@ implements Shamir Perfect Secret Sharing
 var shamir_pss = shamir_pss || {};
 
 // random is a source that implements the functionality of window.crypto.getRandomValues()
+// if it is undefined, window.crypto.getRandomValues() will be used
 shamir_pss.Configuration = function (shares, quorum, random) {
   this.shares = shares;
   this.quorum = quorum;
@@ -17,7 +18,11 @@ shamir_pss.Configuration = function (shares, quorum, random) {
       var coeffs = [];
       coeffs.push(secret[i]);
       var rand0 = new Uint8Array(quorum - 1);
-      this.random(rand0);
+      if (this.random === undefined) {
+        window.crypto.getRandomValues(rand0);
+      } else {
+        this.random(rand0);
+      }
       coeffs = coeffs.concat(rand0);
       for (var n = 0; n < this.shares; n++) {
         shs[n].data[i] = gf256.evaluateAt(coeffs, n);

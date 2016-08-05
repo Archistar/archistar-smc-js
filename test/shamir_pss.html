@@ -32,6 +32,14 @@
       assert.deepEqual(test.decode(res), testtext);
       assert.deepEqual(test.decode([res[5],res[3],res[8],res[0],res[2],res[6]]), testtext);
     });
+    QUnit.test("roundtrip2-realRNG", function(assert) {
+      'use strict';
+      var test = new shamir_pss.Configuration(10, 6, undefined);
+      var testtext = [2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198];
+      var res = test.encode(testtext);
+      assert.deepEqual(test.decode(res), testtext);
+      assert.deepEqual(test.decode([res[5],res[3],res[8],res[0],res[2],res[6]]), testtext);
+    });
   </script>
 </body>
 </html>

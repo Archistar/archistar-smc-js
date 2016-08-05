@@ -7,6 +7,7 @@ https://github.com/Archistar/archistar-smc/blob/master/src/main/java/at/archista
 var rabin_ids = rabin_ids || {};
 
 // random is a source that implements the functionality of window.crypto.getRandomValues()
+// if it is undefined, window.crypto.getRandomValues() will be used
 rabin_ids.Configuration = function (shares, quorum, random) {
   this.shares = shares;
   this.quorum = quorum;
@@ -26,7 +27,11 @@ rabin_ids.Configuration = function (shares, quorum, random) {
           i++;
         } else {
           var rand0 = new Uint8Array(1);
-          this.random(rand0);
+          if (this.random === undefined) {
+            window.crypto.getRandomValues(rand0);
+          } else {
+            this.random(rand0);
+          }
           coeffs[j] = rand0[0];
         }
       }
