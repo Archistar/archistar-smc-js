@@ -10,6 +10,7 @@ var rabin_ids = rabin_ids || {};
 rabin_ids.Configuration = function (shares, quorum, random) {
   this.shares = shares;
   this.quorum = quorum;
+  this.random = random;
   this.encode = function (secret) {
     'use strict';
     var chunks = Math.ceil(secret.length / this.quorum);
@@ -25,7 +26,7 @@ rabin_ids.Configuration = function (shares, quorum, random) {
           i++;
         } else {
           var rand0 = new Uint8Array(1);
-          random(rand0);
+          this.random(rand0);
           coeffs[j] = rand0[0];
         }
       }
