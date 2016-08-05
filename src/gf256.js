@@ -18,7 +18,8 @@ gf256.sub = function (a, b) {
 };
 
 gf256.mult = function (a, b) {
- return gf256.alogtable[gf256.logtable[a] + gf256.logtable[b]];
+  'use strict';
+  return gf256.alogtable[gf256.logtable[a] + gf256.logtable[b]];
 };
 
 gf256.pow = function (a, p) {
