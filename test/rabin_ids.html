@@ -18,7 +18,7 @@
   <script>
     QUnit.test("roundtrip1", function(assert) {
       'use strict';
-      var test = new rabin_ids.Configuration(10, 6, fake_rng.get_values);
+      var test = new rabin_ids.Configuration(10, 6);
       var testtext = [2,3,56,32,57,124,45,34,98,61,1,9,123,233,210];
       var res = test.encode(testtext);
       assert.deepEqual(test.decode(res), testtext);
@@ -26,7 +26,7 @@
     });
     QUnit.test("roundtrip2", function(assert) {
       'use strict';
-      var test = new rabin_ids.Configuration(10, 6, fake_rng.get_values);
+      var test = new rabin_ids.Configuration(10, 6);
       var testtext = [2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198];
       var res = test.encode(testtext);
       assert.deepEqual(test.decode(res), testtext);
@@ -34,15 +34,15 @@
     });
     QUnit.test("roundtrip2-realRNG", function(assert) {
       'use strict';
-      var test = new rabin_ids.Configuration(10, 6, undefined);
+      var test = new rabin_ids.Configuration(10, 6);
       var testtext = [2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198];
       var res = test.encode(testtext);
       assert.deepEqual(test.decode(res), testtext);
       assert.deepEqual(test.decode([res[5],res[3],res[8],res[0],res[2],res[6]]), testtext);
     });
-    QUnit.test("dada", function(assert) {
+    QUnit.test("compare with java test data", function(assert) {
       'use strict';
-      var test = new rabin_ids.Configuration(10, 6, fake_rng.get_values);
+      var test = new rabin_ids.Configuration(10, 6);
       var testtext = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
       var res = test.encode(testtext);
       assert.deepEqual(res[0].data, [92, 88, 134]);

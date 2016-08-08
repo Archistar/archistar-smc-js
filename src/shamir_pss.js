@@ -13,19 +13,17 @@ shamir_pss.Configuration = function (shares, quorum, random) {
   this.encode = function (secret) {
     'use strict';
     var shs = [];
-    for (var k = 0; k < this.shares; k++) {shs[k] = {data: [], degree: k};}
+    for (var k = 0; k < this.shares; k++) {shs[k] = {data: [], degree: k + 1};}
     for (var i = 0; i < secret.length; i++) {
-      var coeffs = [];
-      coeffs.push(secret[i]);
-      var rand0 = new Uint8Array(quorum - 1);
+      var coeffs = new Uint8Array(quorum);
       if (this.random === undefined) {
-        window.crypto.getRandomValues(rand0);
+        window.crypto.getRandomValues(coeffs);
       } else {
-        this.random(rand0);
+        this.random(coeffs);
       }
-      coeffs = coeffs.concat(rand0);
+      coeffs[0] = secret[i];
       for (var n = 0; n < this.shares; n++) {
-        shs[n].data[i] = gf256.evaluateAt(coeffs, n);
+        shs[n].data[i] = gf256.evaluateAt(coeffs, n + 1);
       }
     }
     return shs;
