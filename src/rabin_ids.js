@@ -16,7 +16,7 @@ rabin_ids.Configuration = function (shares, quorum, random) {
     'use strict';
     var chunks = Math.ceil(secret.length / this.quorum);
     var shs = [];
-    for (var k = 0; k < this.shares; k++) {shs[k] = {data: [], degree: k, original_length: secret.length};}
+    for (var k = 0; k < this.shares; k++) {shs[k] = {data: [], degree: k + 1, original_length: secret.length};}
     var i = 0;
 
     for (var chunk = 0; chunk < chunks; chunk++) {
@@ -36,7 +36,7 @@ rabin_ids.Configuration = function (shares, quorum, random) {
         }
       }
       for (var n = 0; n < this.shares; n++) {
-        shs[n].data[chunk] = gf256.evaluateAt(coeffs, n);
+        shs[n].data[chunk] = gf256.evaluateAt(coeffs, n + 1);
       }
     }
 
@@ -44,7 +44,7 @@ rabin_ids.Configuration = function (shares, quorum, random) {
   };
   this.decode = function (shs) {
     'use strict';
-    var xvalues = [];
+    var xvalues = new Uint8Array(shs.length);
     for (var i0 = 0; i0 < shs.length; i0++) {xvalues[i0] = shs[i0].degree;}
     var decoder = matrix.generate_decoder(this.quorum, xvalues);
     var secret = [];

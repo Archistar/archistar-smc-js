@@ -39,13 +39,15 @@ matrix.inverse = function (m) {
 };
 
 matrix.mult_and_subtract = function (row, normalized, coeff) {
-  for (var i = 0; i < row.length; i++) {
+  var length = row.length;
+  for (var i = 0; i < length; i++) {
     row[i] = gf256.sub(row[i], gf256.mult(normalized[i], coeff));
   }
 };
 
 matrix.normalize_row = function (tmp_row, res_row, element) {
-  for (var i = tmp_row.length - 1; i >= 0; i--) {
+  var length = tmp_row.length;
+  for (var i = 0; i < length; i++) {
     tmp_row[i] = gf256.mult(tmp_row[i], element);
     res_row[i] = gf256.mult(res_row[i], element);
   }
@@ -85,9 +87,11 @@ matrix.generate_identity = function (size) {
 
 matrix.deep_copy = function (m) {
   var res = [];
-  for (var i = 0; i < m.length; i++) {
-    res [i] =[];
-    for (var j = 0; j < m[i].length; j++) {
+  var rows = m.length;
+  for (var i = 0; i < rows; i++) {
+    res [i] = [];
+    var columns = m[i].length;
+    for (var j = 0; j < columns; j++) {
       res[i][j] = m[i][j];
     }
   }
@@ -95,9 +99,10 @@ matrix.deep_copy = function (m) {
 };
 
 matrix.is_identity = function (m) {
-  for (var i = 0; i < m.length; i++) {
-    if (m[i].length !== m.length) {return false;}
-    for (var j = 0; j < m.length; j++) {
+  var size = m.length;
+  for (var i = 0; i < size; i++) {
+    if (m[i].length !== size) {return false;}
+    for (var j = 0; j < size; j++) {
       if (i === j && m[i][j] !== 1) {return false;}
       if (i !== j && m[i][j] !== 0) {return false;}
     }
@@ -107,16 +112,19 @@ matrix.is_identity = function (m) {
 
 matrix.multiply = function (a, b) {
   var res = [];
-  for (var i0 = 0; i0 < a.length; i0++) {
+  var a_rows = a.length;
+  var a_columns = a[0].length;
+  var b_columns = b[0].length;
+  for (var i0 = 0; i0 < a_rows; i0++) {
     res [i0] = [];
-    for (var k0 = 0; k0 < b[0].length; k0++) {
+    for (var k0 = 0; k0 < b_columns; k0++) {
       res[i0][k0] = 0;
     }
   }
 
-  for (var j = 0; j < a[0].length; j++) {
-    for (var i = 0; i < a.length; i++) {
-      for (var k = 0; k < b[0].length; k++) {
+  for (var j = 0; j < a_columns; j++) {
+    for (var i = 0; i < a_rows; i++) {
+      for (var k = 0; k < b_columns; k++) {
         res[i][k] = gf256.add(res[i][k], gf256.mult(a[i][j], b[j][k]));
       }
     }
@@ -127,9 +135,10 @@ matrix.multiply = function (a, b) {
 
 matrix.multiply_vector = function (m, v) {
   var res = [];
-  for (var i = 0; i < v.length; i++) {
+  var length = v.length;
+  for (var i = 0; i < length; i++) {
     var tmp = 0;
-    for (var j = 0; j < v.length; j++) {
+    for (var j = 0; j < length; j++) {
       tmp = gf256.add(tmp, gf256.mult(m[i][j], v[j]));
     }
     res[i] = tmp;
@@ -138,9 +147,9 @@ matrix.multiply_vector = function (m, v) {
 };
 
 matrix.generate_decoder = function (size, values) {
-  var res = [];
+  var res = new Array(size);
   for (var i = 0; i < size; i++) {
-    res[i] = [];
+    res[i] = new Uint8Array(size);
     for (var j = 0; j < size; j++) {
       res[i][j] = gf256.pow(values[i], j);
     }

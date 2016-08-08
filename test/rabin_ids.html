@@ -40,6 +40,22 @@
       assert.deepEqual(test.decode(res), testtext);
       assert.deepEqual(test.decode([res[5],res[3],res[8],res[0],res[2],res[6]]), testtext);
     });
+    QUnit.test("dada", function(assert) {
+      'use strict';
+      var test = new rabin_ids.Configuration(10, 6, fake_rng.get_values);
+      var testtext = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
+      var res = test.encode(testtext);
+      assert.deepEqual(res[0].data, [92, 88, 134]);
+      assert.deepEqual(res[1].data, [117, 36, 165]);
+      assert.deepEqual(res[2].data, [128, 93, 246]);
+      assert.deepEqual(res[3].data, [205, 222, 142]);
+      assert.deepEqual(res[4].data, [1, 121, 176]);
+      assert.deepEqual(res[5].data, [21, 94, 73]);
+      assert.deepEqual(res[6].data, [114, 245, 217]);
+      assert.deepEqual(res[7].data, [190, 200, 40]);
+      assert.deepEqual(res[8].data, [30, 16, 124]);
+      assert.deepEqual(res[9].data, [25, 230, 160]);
+    });
   </script>
 </body>
 </html>
