@@ -93,3 +93,19 @@ salsa20.salsa20_k32 = function (k, n) {
     k[5], k[6], k[7], 1797285236
   ]));
 };
+
+salsa20.code = function (key, nonce, text) {
+  var res = new Uint8Array(text.length);
+  var index = 0;
+  for (var block = 0; block < text.length; block = block + 64) {
+    var expanded = salsa20.salsa20_k32(key, [nonce[0], nonce[1], 0, block]);
+    for (var i = 0; i < 16; i++) {
+      var exp0 = salsa20.littleendian_rev(expanded[i]);
+      res[index] = text[index] ^ exp0[0]; index++;
+      res[index] = text[index] ^ exp0[1]; index++;
+      res[index] = text[index] ^ exp0[2]; index++;
+      res[index] = text[index] ^ exp0[3]; index++;
+    }
+  }
+  return res;
+};

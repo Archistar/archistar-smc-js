@@ -163,6 +163,18 @@
         ])
       );
     });
+    QUnit.test("encode/decode", function(assert) {
+      var key = new Uint32Array(8);
+      window.crypto.getRandomValues(key);
+      var nonce = new Uint32Array(2);
+      window.crypto.getRandomValues(nonce);
+      var text = new Uint8Array(1024);
+      window.crypto.getRandomValues(text);
+      var encrypted = salsa20.code(key, nonce, text);
+      var decrypted = salsa20.code(key, nonce, encrypted);
+      assert.notDeepEqual(encrypted, decrypted);
+      assert.deepEqual(decrypted, text);
+    });
   </script>
 </body>
 </html>
