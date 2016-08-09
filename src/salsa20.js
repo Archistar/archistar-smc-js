@@ -5,14 +5,12 @@ http://cr.yp.to/snuffle/spec.pdf
 
 var salsa20 = salsa20 || {};
 
-salsa20.modulus = 4294967296;
-
 salsa20.add = function (a, b) {
-  return (a + b) % salsa20.modulus;
+  return (a + b) % 4294967296; // 2^32
 };
 
 salsa20.rotl = function (u, c) {
-  var shifted = (u << c) % salsa20.modulus;
+  var shifted = (u << c) % 4294967296; // 2^32
   var right = (u >>> (32 - c));
   return shifted ^ right;
 };
@@ -54,4 +52,44 @@ salsa20.columnround = function (x) {
 
 salsa20.doubleround = function (x) {
   return salsa20.rowround(salsa20.columnround(x));
+};
+
+salsa20.littleendian = function (b0, b1, b2, b3) {
+  return b0 + (b1 * 256) + (b2 * 65536) + (b3 * 16777216);
+};
+
+salsa20.littleendian_rev = function (x) {
+  var b = new Uint8Array(4);
+  b[3] = x >>> 24;
+  b[2] = (x ^ 4278190080) >>> 16; // bitmask: 2^32 - 2^24
+  b[1] = (x ^ 4294901760) >>> 8; // bitmask: 2^32 - 2^16
+  b[0] = x ^ 4294967040; // bitmask: 2^32 - 2^8
+  return b;
+};
+
+salsa20.salsa20 = function (x) {
+  var y = salsa20.doubleround(
+            salsa20.doubleround(
+            salsa20.doubleround(
+            salsa20.doubleround(
+            salsa20.doubleround(
+            salsa20.doubleround(
+            salsa20.doubleround(
+            salsa20.doubleround(
+            salsa20.doubleround(
+            salsa20.doubleround(
+            (x)))))))))));
+  for (var i = 0; i < 16; i++) {
+    y[i] = salsa20.add(x[i],y[i]);
+  }
+  return y;
+};
+
+salsa20.salsa20_k32 = function (k, n) {
+  return salsa20.salsa20(new Uint32Array([
+    1634760805, k[0], k[1], k[2],
+    k[3], 857760878, n[0], n[1],
+    n[2], n[3], 2036477234, k[4],
+    k[5], k[6], k[7], 1797285236
+  ]));
 };

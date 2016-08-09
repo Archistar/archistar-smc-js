@@ -110,6 +110,59 @@
         0xa74b2ad6, 0xbc331c5c, 0x1dda24c7, 0xee928277
       ]));
     });
+    QUnit.test("littleendian", function(assert) {
+      assert.equal(salsa20.littleendian(0,0,0,0), 0x00000000);
+      assert.equal(salsa20.littleendian(86,75,30,9), 0x091e4b56);
+      assert.equal(salsa20.littleendian(255,255,255,250), 0xfaffffff);
+      assert.deepEqual(salsa20.littleendian_rev(0x00000000), (new Uint8Array([0,0,0,0])));
+      assert.deepEqual(salsa20.littleendian_rev(0x091e4b56), (new Uint8Array([86,75,30,9])));
+      assert.deepEqual(salsa20.littleendian_rev(0xfaffffff), (new Uint8Array([255,255,255,250])));
+    });
+    QUnit.test("salsa20", function(assert) {
+      assert.deepEqual(salsa20.salsa20(
+        new Uint32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])), new Uint32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]));
+      assert.deepEqual(salsa20.salsa20(
+        new Uint32Array([
+        salsa20.littleendian(211,159,13,115), salsa20.littleendian(76,55,82,183), salsa20.littleendian(3,117,222,37), salsa20.littleendian(191,187,234,136),
+        salsa20.littleendian(49,237,179,48), salsa20.littleendian(1,106,178,219), salsa20.littleendian(175,199,166,48), salsa20.littleendian(86,16,179,207),
+        salsa20.littleendian(31,240,32,63), salsa20.littleendian(15,83,93,161), salsa20.littleendian(116,147,48,113), salsa20.littleendian(238,55,204,36),
+        salsa20.littleendian(79,201,235,79), salsa20.littleendian(3,81,156,47), salsa20.littleendian(203,26,244,243), salsa20.littleendian(88,118,104,54)])),
+        new Uint32Array([
+        salsa20.littleendian(109,42,178,168), salsa20.littleendian(156,240,248,238), salsa20.littleendian(168,196,190,203), salsa20.littleendian(26,110,170,154),
+        salsa20.littleendian(29,29,150,26), salsa20.littleendian(150,30,235,249), salsa20.littleendian(190,163,251,48), salsa20.littleendian(69,144,51,57),
+        salsa20.littleendian(118,40,152,157), salsa20.littleendian(180,57,27,94), salsa20.littleendian(107,42,236,35), salsa20.littleendian(27,111,114,114),
+        salsa20.littleendian(219,236,232,135), salsa20.littleendian(111,155,110,18), salsa20.littleendian(24,232,95,158), salsa20.littleendian(179,19,48,202)
+        ]));
+      assert.deepEqual(salsa20.salsa20(
+        new Uint32Array([
+        salsa20.littleendian(88,118,104,54), salsa20.littleendian(79,201,235,79), salsa20.littleendian(3,81,156,47), salsa20.littleendian(203,26,244,243),
+        salsa20.littleendian(191,187,234,136), salsa20.littleendian(211,159,13,115), salsa20.littleendian(76,55,82,183), salsa20.littleendian(3,117,222,37),
+        salsa20.littleendian(86,16,179,207), salsa20.littleendian(49,237,179,48), salsa20.littleendian(1,106,178,219), salsa20.littleendian(175,199,166,48),
+        salsa20.littleendian(238,55,204,36), salsa20.littleendian(31,240,32,63), salsa20.littleendian(15,83,93,161), salsa20.littleendian(116,147,48,113)])),
+        new Uint32Array([
+        salsa20.littleendian(179,19,48,202), salsa20.littleendian(219,236,232,135), salsa20.littleendian(111,155,110,18), salsa20.littleendian(24,232,95,158),
+        salsa20.littleendian(26,110,170,154), salsa20.littleendian(109,42,178,168), salsa20.littleendian(156,240,248,238), salsa20.littleendian(168,196,190,203),
+        salsa20.littleendian(69,144,51,57), salsa20.littleendian(29,29,150,26), salsa20.littleendian(150,30,235,249), salsa20.littleendian(190,163,251,48),
+        salsa20.littleendian(27,111,114,114), salsa20.littleendian(118,40,152,157), salsa20.littleendian(180,57,27,94), salsa20.littleendian(107,42,236,35)
+        ]));
+    });
+    QUnit.test("salsa20_k32", function(assert) {
+      assert.deepEqual(salsa20.salsa20_k32(
+          new Uint32Array([
+            salsa20.littleendian(1,2,3,4), salsa20.littleendian(5,6,7,8), salsa20.littleendian(9,10,11,12), salsa20.littleendian(13,14,15,16),
+            salsa20.littleendian(201,202,203,204), salsa20.littleendian(205,206,207,208), salsa20.littleendian(209,210,211,212), salsa20.littleendian(213,214,215,216)
+          ]),
+          new Uint32Array([
+            salsa20.littleendian(101,102,103,104), salsa20.littleendian(105,106,107,108), salsa20.littleendian(109,110,111,112), salsa20.littleendian(113,114,115,116)
+          ])),
+        new Uint32Array([
+        salsa20.littleendian(69,37,68,39), salsa20.littleendian(41,15,107,193), salsa20.littleendian(255,139,122,6), salsa20.littleendian(170,233,217,98),
+        salsa20.littleendian(89,144,182,106), salsa20.littleendian(21,51,200,65), salsa20.littleendian(239,49,222,34), salsa20.littleendian(215,114,40,126),
+        salsa20.littleendian(104,197,7,225), salsa20.littleendian(197,153,31,2), salsa20.littleendian(102,78,76,176), salsa20.littleendian(84,245,246,184),
+        salsa20.littleendian(177,160,133,130), salsa20.littleendian(6,72,149,119), salsa20.littleendian(192,195,132,236), salsa20.littleendian(234,103,246,74)
+        ])
+      );
+    });
   </script>
 </body>
 </html>
