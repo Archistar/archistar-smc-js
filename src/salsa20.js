@@ -94,11 +94,25 @@ salsa20.salsa20_k32 = function (k, n) {
   ]));
 };
 
+/*
+use this to encrypt and decrypt with Salsa20
+keys is Uint8Array of length 32 (that means: we only use Salsa20 with 32 byte keys)
+nonce is Uint8Array of length 8
+text is Uint8Array of length l % 64 == 0
+*/
 salsa20.code = function (key, nonce, text) {
   var res = new Uint8Array(text.length);
   var index = 0;
-  for (var block = 0; block < text.length; block = block + 64) {
-    var expanded = salsa20.salsa20_k32(key, [nonce[0], nonce[1], 0, block]);
+  var length = text.length;
+  var key32 = new Uint32Array(8);
+  var nonce32 = new Uint32Array(2);
+  for (var i0 = 0; i0 < 8; i0++) {
+      key32[i0] = salsa20.littleendian(key[i0*4], key[i0*4+1], key[i0*4+2], key[i0*4+3]);
+    }
+  nonce32[0] = salsa20.littleendian(nonce[0], nonce[1], nonce[2], nonce[3]);
+  nonce32[1] = salsa20.littleendian(nonce[4], nonce[5], nonce[6], nonce[7]);
+  for (var block = 0; block < length; block = block + 64) {
+    var expanded = salsa20.salsa20_k32(key32, [nonce32[0], nonce32[1], 0, block]);
     for (var i = 0; i < 16; i++) {
       var exp0 = salsa20.littleendian_rev(expanded[i]);
       res[index] = text[index] ^ exp0[0]; index++;
