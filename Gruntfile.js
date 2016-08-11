@@ -2,36 +2,34 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    browserify: {
+      dist: {
+        files: {
+          'build/main.js': ['src/**/*.js', 'test/**/*.js'],
+          'build/suite1.js': ['scripts/suite1.js']
+        }
+      }
+    },
     jshint: {
       files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
       options: {
         'esversion': 6,
       }
     },
-    qunit: {
-      files: ['test/**/*.html']
+    nodeunit: {
+      all: ['test/**/*.js']
     },
-    generate: {
-      options: {
-        dest: 'src'
-      }
-    },
-    watch: {
-      files: ['<%= jshint.files %>'],
-      tasks: ['jshint']
-    }
   });
 
+  grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
-  grunt.loadNpmTasks('grunt-generate');
-  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-nodeunit');
 
   //in case we ever need to regenerate the lookup tables:
   //uncomment the following two lines and do "grunt generate:lookup:table"
   //grunt.config.set('logtable', eval(grunt.file.read('scripts/generate_lookup_tables.js'))[0].toString());
   //grunt.config.set('alogtable', eval(grunt.file.read('scripts/generate_lookup_tables.js'))[1].toString());
 
-  grunt.registerTask('default', ['jshint']);
-  grunt.registerTask('test', ['jshint', 'qunit']);
+  grunt.registerTask('default', ['jshint', 'browserify']);
+  grunt.registerTask('test', ['jshint', 'browserify', 'nodeunit']);
 };

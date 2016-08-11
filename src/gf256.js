@@ -5,7 +5,9 @@ https://github.com/Archistar/archistar-smc/blob/master/src/main/java/at/archista
 the lookup tables from the original are pregenerated into a separate file
 */
 
-var gf256 = gf256 || {};
+var gf256 = module.exports;
+
+const table = require('./table.js');
 
 gf256.add = function (a, b) {
   'use strict';
@@ -19,7 +21,7 @@ gf256.sub = function (a, b) {
 
 gf256.mult = function (a, b) {
   'use strict';
-  return gf256.alogtable[gf256.logtable[a] + gf256.logtable[b]];
+  return table.alogtable[table.logtable[a] + table.logtable[b]];
 };
 
 gf256.pow = function (a, p) {
@@ -27,13 +29,13 @@ gf256.pow = function (a, p) {
   if (a === 0 && p !== 0) {
     return 0;
   } else {
-    return gf256.alogtable[p*gf256.logtable[a] % 255];
+    return table.alogtable[p*table.logtable[a] % 255];
   }
 };
 
 gf256.inverse = function (a) {
   'use strict';
-  return gf256.alogtable[255 - (gf256.logtable[a] % 255)];
+  return table.alogtable[255 - (table.logtable[a] % 255)];
 };
 
 gf256.div = function (a, b) {
@@ -41,15 +43,15 @@ gf256.div = function (a, b) {
   if (b === 0) {
     throw "Division by Zero";
   }
-  return gf256.alogtable[gf256.logtable[a] + 255 - gf256.logtable[b]];
+  return table.alogtable[table.logtable[a] + 255 - table.logtable[b]];
 };
 
 gf256.evaluateAt = function (coeffs, x) {
   'use strict';
-  var degree = coeffs.length - 1;
-  var result = coeffs[degree];
+  const degree = coeffs.length - 1;
+  let result = coeffs[degree];
 
-  for (var i = degree - 1; i >= 0; i--){
+  for (let i = degree - 1; i >= 0; i--){
     result = gf256.add(gf256.mult(result, x), coeffs[i]);
   }
   return result;
