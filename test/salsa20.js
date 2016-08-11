@@ -1,45 +1,52 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Salsa20 Tests (from the paper)</title>
-  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.0.1.css">
-</head>
+exports.add = function(test) {
+  'use strict';
+  test.expect(1);
+  const salsa20 = require('./../src/salsa20.js');
+  test.equal(salsa20.add(0xc0a8787e, 0x9fd1161d), 0x60798e9b);
+  test.done();
+};
 
-<body>
-  <div id="qunit"></div>
-  <div id="qunit-fixture"></div>
-  <script src="https://code.jquery.com/qunit/qunit-2.0.1.js"></script>
-  <script src="../src/salsa20.js"></script>
-  <script>
-    QUnit.test("add", function(assert) {
-      'use strict';
-      assert.equal(salsa20.add(0xc0a8787e, 0x9fd1161d), 0x60798e9b);
-    });
-    QUnit.test("xor", function(assert) {
-      assert.equal((0xc0a8787e ^ 0x9fd1161d), 0x5f796e63);
-    });
-    QUnit.test("rotate left", function(assert) {
-      assert.equal(salsa20.rotl(0xc0a8787e, 5), 0x150f0fd8);
-    });
-    QUnit.test("quarterround", function(assert) {
-      assert.deepEqual(salsa20.quarterround(new Uint32Array([0x00000000,0x00000000,0x00000000,0x00000000])),
+exports.xor = function(test) {
+  'use strict';
+  test.expect(1);
+  test.equal((0xc0a8787e ^ 0x9fd1161d), 0x5f796e63);
+  test.done();
+};
+
+exports.rotate_left = function(test) {
+  'use strict';
+  test.expect(1);
+  const salsa20 = require('./../src/salsa20.js');
+  test.equal(salsa20.rotl(0xc0a8787e, 5), 0x150f0fd8);
+  test.done();
+};
+
+exports.quarterround = function(test) {
+  'use strict';
+  test.expect(7);
+  const salsa20 = require('./../src/salsa20.js');
+  test.deepEqual(salsa20.quarterround(new Uint32Array([0x00000000,0x00000000,0x00000000,0x00000000])),
                    new Uint32Array([0x00000000,0x00000000,0x00000000,0x00000000]));
-      assert.deepEqual(salsa20.quarterround(new Uint32Array([0x00000001,0x00000000,0x00000000,0x00000000])),
+  test.deepEqual(salsa20.quarterround(new Uint32Array([0x00000001,0x00000000,0x00000000,0x00000000])),
                    new Uint32Array([0x08008145,0x00000080,0x00010200,0x20500000]));
-      assert.deepEqual(salsa20.quarterround(new Uint32Array([0x00000000,0x00000001,0x00000000,0x00000000])),
+  test.deepEqual(salsa20.quarterround(new Uint32Array([0x00000000,0x00000001,0x00000000,0x00000000])),
                    new Uint32Array([0x88000100,0x00000001,0x00000200,0x00402000]));
-      assert.deepEqual(salsa20.quarterround(new Uint32Array([0x00000000,0x00000000,0x00000001,0x00000000])),
+  test.deepEqual(salsa20.quarterround(new Uint32Array([0x00000000,0x00000000,0x00000001,0x00000000])),
                    new Uint32Array([0x80040000,0x00000000,0x0000001,0x00002000]));
-      assert.deepEqual(salsa20.quarterround(new Uint32Array([0x00000000,0x00000000,0x00000000,0x00000001])),
+  test.deepEqual(salsa20.quarterround(new Uint32Array([0x00000000,0x00000000,0x00000000,0x00000001])),
                    new Uint32Array([0x00048044,0x00000080,0x00010000,0x20100001]));
-      assert.deepEqual(salsa20.quarterround(new Uint32Array([0xe7e8c006,0xc4f9417d,0x6479b4b2,0x68c67137])),
+  test.deepEqual(salsa20.quarterround(new Uint32Array([0xe7e8c006,0xc4f9417d,0x6479b4b2,0x68c67137])),
                    new Uint32Array([0xe876d72b,0x9361dfd5,0xf1460244,0x948541a3]));
-      assert.deepEqual(salsa20.quarterround(new Uint32Array([0xd3917c5b,0x55f1c407,0x52a58a7a,0x8f887a3b])),
+  test.deepEqual(salsa20.quarterround(new Uint32Array([0xd3917c5b,0x55f1c407,0x52a58a7a,0x8f887a3b])),
                    new Uint32Array([0x3e2f308c,0xd90a8f36,0x6ab2a923,0x2883524c]));
-    });
-    QUnit.test("rowround", function(assert) {
-      assert.deepEqual(salsa20.rowround(new Uint32Array([
+  test.done();
+};
+
+exports.rowround = function(test) {
+  'use strict';
+  test.expect(2);
+  const salsa20 = require('./../src/salsa20.js');
+  test.deepEqual(salsa20.rowround(new Uint32Array([
         0x00000001, 0x00000000, 0x00000000, 0x00000000,
         0x00000001, 0x00000000, 0x00000000, 0x00000000,
         0x00000001, 0x00000000, 0x00000000, 0x00000000,
@@ -50,7 +57,7 @@
         0x00000001, 0x00002000, 0x80040000, 0x00000000,
         0x00000001, 0x00000200, 0x00402000, 0x88000100
       ]));
-      assert.deepEqual(salsa20.rowround(new Uint32Array([
+  test.deepEqual(salsa20.rowround(new Uint32Array([
         0x08521bd6, 0x1fe88837, 0xbb2aa576, 0x3aa26365,
         0xc54c6a5b, 0x2fc74c2f, 0x6dd39cc3, 0xda0a64f6,
         0x90a2f23d, 0x067f95a6, 0x06b35f61, 0x41e4732e,
@@ -61,9 +68,14 @@
         0x3402e183, 0x3c3af432, 0x50669f96, 0xd89ef0a8,
         0x0040ede5, 0xb545fbce, 0xd257ed4f, 0x1818882d
       ]));
-    });
-    QUnit.test("columnround", function(assert) {
-      assert.deepEqual(salsa20.columnround(new Uint32Array([
+  test.done();
+};
+
+exports.columnround = function(test) {
+  'use strict';
+  test.expect(2);
+  const salsa20 = require('./../src/salsa20.js');
+  test.deepEqual(salsa20.columnround(new Uint32Array([
         0x00000001, 0x00000000, 0x00000000, 0x00000000,
         0x00000001, 0x00000000, 0x00000000, 0x00000000,
         0x00000001, 0x00000000, 0x00000000, 0x00000000,
@@ -74,7 +86,7 @@
         0x00020401, 0x00000000, 0x00000000, 0x00000000,
         0x40a04001, 0x00000000, 0x00000000, 0x00000000
       ]));
-      assert.deepEqual(salsa20.columnround(new Uint32Array([
+  test.deepEqual(salsa20.columnround(new Uint32Array([
         0x08521bd6, 0x1fe88837, 0xbb2aa576, 0x3aa26365,
         0xc54c6a5b, 0x2fc74c2f, 0x6dd39cc3, 0xda0a64f6,
         0x90a2f23d, 0x067f95a6, 0x06b35f61, 0x41e4732e,
@@ -85,9 +97,14 @@
         0x789b010c, 0xd195a681, 0xeb7d5504, 0xa774135c,
         0x481c2027, 0x53a8e4b5, 0x4c1f89c5, 0x3f78c9c8
       ]));
-    });
-    QUnit.test("doubleround", function(assert) {
-      assert.deepEqual(salsa20.doubleround(new Uint32Array([
+  test.done();
+};
+
+exports.doubleround = function(test) {
+  'use strict';
+  test.expect(2);
+  const salsa20 = require('./../src/salsa20.js');
+  test.deepEqual(salsa20.doubleround(new Uint32Array([
         0x00000001, 0x00000000, 0x00000000, 0x00000000,
         0x00000000, 0x00000000, 0x00000000, 0x00000000,
         0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -98,7 +115,7 @@
         0x00010200, 0x20400000, 0x08008104, 0x00000000,
         0x20500000, 0xa0000040, 0x0008180a, 0x612a8020
       ]));
-      assert.deepEqual(salsa20.doubleround(new Uint32Array([
+  test.deepEqual(salsa20.doubleround(new Uint32Array([
         0xde501066, 0x6f9eb8f7, 0xe4fbbd9b, 0x454e3f57,
         0xb75540d3, 0x43e93a4c, 0x3a6f2aa0, 0x726d6b36,
         0x9243f484, 0x9145d1e8, 0x4fa9d247, 0xdc8dee11,
@@ -109,19 +126,29 @@
         0xca531c29, 0x8e7943db, 0xac1680cd, 0xd503ca00,
         0xa74b2ad6, 0xbc331c5c, 0x1dda24c7, 0xee928277
       ]));
-    });
-    QUnit.test("littleendian", function(assert) {
-      assert.equal(salsa20.littleendian(0,0,0,0), 0x00000000);
-      assert.equal(salsa20.littleendian(86,75,30,9), 0x091e4b56);
-      assert.equal(salsa20.littleendian(255,255,255,250), 0xfaffffff);
-      assert.deepEqual(salsa20.littleendian_rev(0x00000000), (new Uint8Array([0,0,0,0])));
-      assert.deepEqual(salsa20.littleendian_rev(0x091e4b56), (new Uint8Array([86,75,30,9])));
-      assert.deepEqual(salsa20.littleendian_rev(0xfaffffff), (new Uint8Array([255,255,255,250])));
-    });
-    QUnit.test("salsa20", function(assert) {
-      assert.deepEqual(salsa20.salsa20(
+  test.done();
+};
+
+exports.littleendian = function(test) {
+  'use strict';
+  test.expect(6);
+  const salsa20 = require('./../src/salsa20.js');
+  test.equal(salsa20.littleendian(0,0,0,0), 0x00000000);
+  test.equal(salsa20.littleendian(86,75,30,9), 0x091e4b56);
+  test.equal(salsa20.littleendian(255,255,255,250), 0xfaffffff);
+  test.deepEqual(salsa20.littleendian_rev(0x00000000), (new Uint8Array([0,0,0,0])));
+  test.deepEqual(salsa20.littleendian_rev(0x091e4b56), (new Uint8Array([86,75,30,9])));
+  test.deepEqual(salsa20.littleendian_rev(0xfaffffff), (new Uint8Array([255,255,255,250])));
+  test.done();
+};
+
+exports.salsa20 = function(test) {
+  'use strict';
+  test.expect(3);
+  const salsa20 = require('./../src/salsa20.js');
+  test.deepEqual(salsa20.salsa20(
         new Uint32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])), new Uint32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]));
-      assert.deepEqual(salsa20.salsa20(
+  test.deepEqual(salsa20.salsa20(
         new Uint32Array([
         salsa20.littleendian(211,159,13,115), salsa20.littleendian(76,55,82,183), salsa20.littleendian(3,117,222,37), salsa20.littleendian(191,187,234,136),
         salsa20.littleendian(49,237,179,48), salsa20.littleendian(1,106,178,219), salsa20.littleendian(175,199,166,48), salsa20.littleendian(86,16,179,207),
@@ -133,7 +160,7 @@
         salsa20.littleendian(118,40,152,157), salsa20.littleendian(180,57,27,94), salsa20.littleendian(107,42,236,35), salsa20.littleendian(27,111,114,114),
         salsa20.littleendian(219,236,232,135), salsa20.littleendian(111,155,110,18), salsa20.littleendian(24,232,95,158), salsa20.littleendian(179,19,48,202)
         ]));
-      assert.deepEqual(salsa20.salsa20(
+  test.deepEqual(salsa20.salsa20(
         new Uint32Array([
         salsa20.littleendian(88,118,104,54), salsa20.littleendian(79,201,235,79), salsa20.littleendian(3,81,156,47), salsa20.littleendian(203,26,244,243),
         salsa20.littleendian(191,187,234,136), salsa20.littleendian(211,159,13,115), salsa20.littleendian(76,55,82,183), salsa20.littleendian(3,117,222,37),
@@ -145,9 +172,14 @@
         salsa20.littleendian(69,144,51,57), salsa20.littleendian(29,29,150,26), salsa20.littleendian(150,30,235,249), salsa20.littleendian(190,163,251,48),
         salsa20.littleendian(27,111,114,114), salsa20.littleendian(118,40,152,157), salsa20.littleendian(180,57,27,94), salsa20.littleendian(107,42,236,35)
         ]));
-    });
-    QUnit.test("salsa20_k32", function(assert) {
-      assert.deepEqual(salsa20.salsa20_k32(
+  test.done();
+};
+
+exports.salsa20_k32 = function(test) {
+  'use strict';
+  test.expect(1);
+  const salsa20 = require('./../src/salsa20.js');
+  test.deepEqual(salsa20.salsa20_k32(
           new Uint32Array([
             salsa20.littleendian(1,2,3,4), salsa20.littleendian(5,6,7,8), salsa20.littleendian(9,10,11,12), salsa20.littleendian(13,14,15,16),
             salsa20.littleendian(201,202,203,204), salsa20.littleendian(205,206,207,208), salsa20.littleendian(209,210,211,212), salsa20.littleendian(213,214,215,216)
@@ -162,19 +194,20 @@
         salsa20.littleendian(177,160,133,130), salsa20.littleendian(6,72,149,119), salsa20.littleendian(192,195,132,236), salsa20.littleendian(234,103,246,74)
         ])
       );
-    });
-    QUnit.test("encode/decode", function(assert) {
-      var key = new Uint32Array(8);
-      window.crypto.getRandomValues(key);
-      var nonce = new Uint32Array(2);
-      window.crypto.getRandomValues(nonce);
-      var text = new Uint8Array(1024);
-      window.crypto.getRandomValues(text);
-      var encrypted = salsa20.code(key, nonce, text);
-      var decrypted = salsa20.code(key, nonce, encrypted);
-      assert.notDeepEqual(encrypted, decrypted);
-      assert.deepEqual(decrypted, text);
-    });
-  </script>
-</body>
-</html>
+  test.done();
+};
+
+exports.code = function(test) {
+  'use strict';
+  test.expect(2);
+  const salsa20 = require('./../src/salsa20.js');
+  const crypto = require('crypto');
+  const key = crypto.randomBytes(32);
+  const nonce = crypto.randomBytes(8);
+  const text = crypto.randomBytes(1024);
+  const encrypted = salsa20.code(key, nonce, text);
+  const decrypted = salsa20.code(key, nonce, encrypted);
+  test.notDeepEqual(encrypted, decrypted);
+  test.deepEqual(decrypted, text);
+  test.done();
+};
