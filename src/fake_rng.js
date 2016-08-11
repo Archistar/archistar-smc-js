@@ -2,16 +2,18 @@
 imitates the functionality of window.crypto.getRandomValues(), but always returns the same values for testing purposes
 */
 
-var fake_rng = fake_rng || {};
+var fake_rng = module.exports;
 
 fake_rng.get_values_4 = function(a) {
-  for (var i = 0; i < a.length; i++) {
+  'use strict';
+  for (let i = 0; i < a.length; i++) {
      a[i] = 4;
   }
 };
 
 fake_rng.get_values = function(a) {
-  for (var i = 0; i < a.length; i++) {
+  'use strict';
+  for (let i = 0; i < a.length; i++) {
     a[i] = fake_rng.source[i];
   }
 };

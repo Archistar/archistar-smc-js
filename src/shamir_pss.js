@@ -2,7 +2,10 @@
 implements Shamir Perfect Secret Sharing
 */
 
-var shamir_pss = shamir_pss || {};
+var shamir_pss = module.exports;
+
+const gf256 = require('./gf256.js');
+const matrix = require('./matrix.js');
 
 // random is a source that implements the functionality of window.crypto.getRandomValues()
 // if it is undefined, window.crypto.getRandomValues() will be used
@@ -12,17 +15,22 @@ shamir_pss.Configuration = function (shares, quorum, random) {
   this.random = random;
   this.encode = function (secret) {
     'use strict';
-    var shs = [];
-    for (var k = 0; k < this.shares; k++) {shs[k] = {data: [], degree: k + 1};}
-    for (var i = 0; i < secret.length; i++) {
-      var coeffs = new Uint8Array(quorum);
+    const shs = [];
+    for (let k = 0; k < this.shares; k++) {shs[k] = {data: [], degree: k + 1};}
+    for (let i = 0; i < secret.length; i++) {
+      let coeffs = new Uint8Array(quorum);
       if (this.random === undefined) {
-        window.crypto.getRandomValues(coeffs);
+        if (typeof window != 'function') {
+          const crypto = require('crypto');
+          coeffs = crypto.randomBytes(quorum);
+        } else {
+          window.crypto.getRandomValues(coeffs);
+        }
       } else {
         this.random(coeffs);
       }
       coeffs[0] = secret[i];
-      for (var n = 0; n < this.shares; n++) {
+      for (let n = 0; n < this.shares; n++) {
         shs[n].data[i] = gf256.evaluateAt(coeffs, n + 1);
       }
     }
@@ -30,15 +38,15 @@ shamir_pss.Configuration = function (shares, quorum, random) {
   };
   this.decode = function (shs) {
     'use strict';
-    var xvalues = [];
-    for (var i0 = 0; i0 < shs.length; i0++) {xvalues[i0] = shs[i0].degree;}
-    var decoder = matrix.generate_decoder(this.quorum, xvalues);
-    var secret = [];
-    var length = shs[0].data.length;
-    for (var i = 0; i < length; i++) {
-      var yvalues = [];
-      for (var i2 = 0; i2 < this.quorum; i2++) {yvalues[i2] = shs[i2].data[i];}
-      var decoded = matrix.multiply_vector(decoder, yvalues);
+    const xvalues = [];
+    for (let i0 = 0; i0 < shs.length; i0++) {xvalues[i0] = shs[i0].degree;}
+    const decoder = matrix.generate_decoder(this.quorum, xvalues);
+    const secret = [];
+    const length = shs[0].data.length;
+    for (let i = 0; i < length; i++) {
+      const yvalues = [];
+      for (let i2 = 0; i2 < this.quorum; i2++) {yvalues[i2] = shs[i2].data[i];}
+      const decoded = matrix.multiply_vector(decoder, yvalues);
       secret.push(decoded[0]);
     }
     return secret;
