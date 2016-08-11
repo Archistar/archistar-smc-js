@@ -20,12 +20,8 @@ shamir_pss.Configuration = function (shares, quorum, random) {
     for (let i = 0; i < secret.length; i++) {
       let coeffs = new Uint8Array(quorum);
       if (this.random === undefined) {
-        if (typeof window != 'function') {
-          const crypto = require('crypto');
-          coeffs = crypto.randomBytes(quorum);
-        } else {
-          window.crypto.getRandomValues(coeffs);
-        }
+        const randomBytes = require('randombytes');
+        coeffs = randomBytes(quorum);
       } else {
         this.random(coeffs);
       }

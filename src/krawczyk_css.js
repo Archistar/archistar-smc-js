@@ -15,12 +15,12 @@ krawczyk_css.Configuration = function (shares, quorum, random) {
   const salsa20 = require('./salsa20.js');
   this.encode = function (secret) {
     'use strict';
-    let key_nonce = new Uint8Array(40);
-    if (typeof window == 'function') {
-      window.crypto.getRandomValues(key_nonce);
+    var key_nonce = new Uint8Array(40);
+    if (random === undefined) {
+      const randomBytes = require('randombytes');
+      key_nonce = randomBytes(40);
     } else {
-      const crypto = require('crypto');
-      key_nonce = crypto.randomBytes(40);
+      random(key_nonce);
     }
     const encrypted_secret = salsa20.code(key_nonce.slice(0,32), key_nonce.slice(32,40), secret);
     const shs = this.rabin.encode(encrypted_secret);
