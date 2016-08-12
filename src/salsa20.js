@@ -68,10 +68,10 @@ salsa20.littleendian = function (b0, b1, b2, b3) {
 salsa20.littleendian_rev = function (x) {
   'use strict';
   const b = new Uint8Array(4);
-  b[3] = x >>> 24;
-  b[2] = (x ^ 4278190080) >>> 16; // bitmask: 2^32 - 2^24
-  b[1] = (x ^ 4294901760) >>> 8; // bitmask: 2^32 - 2^16
-  b[0] = x ^ 4294967040; // bitmask: 2^32 - 2^8
+  b[3] = x >>> 24; // we would need to & with bitmasks here
+  b[2] = x >>> 16; // but values are auto-truncated to 8 bits
+  b[1] = x >>> 8;  // because of the Uint8Array
+  b[0] = x;
   return b;
 };
 
