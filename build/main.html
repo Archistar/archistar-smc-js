@@ -5,7 +5,39 @@
     <script src="./main.js"></script>
   </head>
   <body>
-    <textarea name="textarea" id="0" rows="10" cols="50">Write something here</textarea>
-    <input type ="button" onclick="share();" value="Share"/>
+    <p>
+      <textarea name="textarea" id="0" rows="15" cols="80">Write something here</textarea>
+    </p>
+    <p>
+      Number of Shares: <select id="1">
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+        <option>10</option>
+      </select>
+      Quorum for Reconstruction: <select id="2">
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+        <option>10</option>
+      </select>
+      <input type="button" onclick="share();" value="Share"/>
+    </p>
+    <p id="3">
+
+    </p>
+    <p>
+      <input type="button" onclick="recombine();" value="Recombine"/>
+    </p>
   </body>
 </html>
