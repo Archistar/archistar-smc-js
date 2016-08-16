@@ -1,6 +1,7 @@
 share = function() {
-  const shares = new Number(document.getElementById(1).value);
-  const quorum = new Number(document.getElementById(2).value);
+  const shares = Number.parseInt(document.getElementById(1).value);
+  const quorum = Number.parseInt(document.getElementById(2).value);
+
   if (quorum >= shares) {alert("number shares must be greater than quorum for reconstruction"); return;}
 
   const input = document.getElementById(0);
@@ -17,7 +18,7 @@ share = function() {
   for (let i = 0; i < encoded.length; i++) {
     const p = document.createElement("p");
     const data = document.createTextNode(encoded[i].data);
-    const keynonce = document.createTextNode(encoded[i].key_nonce_data.data[0]);
+    const keynonce = document.createTextNode(encoded[i].key_nonce_data.data);
     const degree = document.createTextNode(encoded[i].key_nonce_data.degree);
     const b = document.createElement("input");
     b.type = "checkbox";

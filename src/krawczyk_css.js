@@ -5,9 +5,6 @@ http://courses.csail.mit.edu/6.857/2009/handouts/short-krawczyk.pdf
 var krawczyk_css = module.exports;
 
 krawczyk_css.Configuration = function (shares, quorum, random) {
-  this.shares = shares;
-  this.quorum = quorum;
-  this.random = random;
   const rabin_ids = require('./rabin_ids.js');
   this.rabin = new rabin_ids.Configuration(shares, quorum);
   const shamir_pss = require('./shamir_pss.js');
@@ -25,7 +22,7 @@ krawczyk_css.Configuration = function (shares, quorum, random) {
     const encrypted_secret = salsa20.code(key_nonce.slice(0,32), key_nonce.slice(32,40), secret);
     const shs = this.rabin.encode(encrypted_secret);
     const key_nonce_shares = this.shamir.encode(key_nonce);
-    for (let i = 0; i < this.shares; i++) {
+    for (let i = 0; i < shares; i++) {
       shs[i].key_nonce_data = key_nonce_shares[i];
     }
     return shs;
