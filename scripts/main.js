@@ -1,7 +1,6 @@
 share = function() {
   const shares = parseInt(document.getElementById(1).value, 10);
   const quorum = parseInt(document.getElementById(2).value, 10);
-
   if (quorum >= shares) {alert("number shares must be greater than quorum for reconstruction"); return;}
 
   const input = document.getElementById(0);
@@ -9,8 +8,6 @@ share = function() {
   const krawczyk_css = require('./../src/krawczyk_css.js');
   const krawczyk = new krawczyk_css.Configuration(shares, quorum);
   const encoded = krawczyk.encode(text.string_to_byte_array(input.value));
-
-  console.log(text.string_to_byte_array(input.value));
 
   const paragraph = document.getElementById(3);
   while (paragraph.firstChild) {
@@ -38,10 +35,10 @@ share = function() {
 
 recombine = function() {
   const par = document.getElementById(3);
-  const shs = [];
-
+  if (typeof(par.children[0]) === 'undefined') {return;}
   const shares = parseInt(document.getElementById(1).value, 10);
   const quorum = parseInt(document.getElementById(2).value, 10);
+  const shs = [];
 
   for (let i = 0; i < shares; i++) {
     if (par.children[i].childNodes[0].checked) {
@@ -62,9 +59,6 @@ recombine = function() {
   const krawczyk_css = require('./../src/krawczyk_css.js');
   const krawczyk = new krawczyk_css.Configuration(shares, quorum);
   const text = require('./../src/text.js');
-
   const reconstructed = text.byte_array_to_string(krawczyk.decode(shs));
-
   alert(reconstructed);
-
 };
