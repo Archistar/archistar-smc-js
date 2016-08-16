@@ -2,6 +2,12 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    benchmark: {
+      all: {
+        src: ['benchmarks/*.js'],
+        dest: 'benchmarks/results.csv'
+      }
+    },
     browserify: {
       dist: {
         files: {
@@ -21,6 +27,7 @@ module.exports = function(grunt) {
     },
   });
 
+  grunt.loadNpmTasks('grunt-benchmark');
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
@@ -30,6 +37,7 @@ module.exports = function(grunt) {
   //grunt.config.set('logtable', eval(grunt.file.read('scripts/generate_lookup_tables.js'))[0].toString());
   //grunt.config.set('alogtable', eval(grunt.file.read('scripts/generate_lookup_tables.js'))[1].toString());
 
+  grunt.registerTask('bench', ['jshint', 'benchmark:all']);
   grunt.registerTask('default', ['jshint', 'browserify']);
   grunt.registerTask('test', ['jshint', 'browserify', 'nodeunit']);
 };
