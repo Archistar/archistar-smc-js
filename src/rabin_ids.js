@@ -38,23 +38,22 @@ rabin_ids.Configuration = function (shares, quorum) {
   };
   this.decode = function (shs) {
     'use strict';
-    var xvalues = new Uint8Array(shs.length);
-    for (let i0 = 0; i0 < shs.length; i0++) {xvalues[i0] = shs[i0].degree;}
+    const xvalues = new Uint8Array(shs.length);
+    for (let i = 0; i < shs.length; i++) {xvalues[i] = shs[i].degree;}
     const decoder = matrix.generate_decoder(quorum, xvalues);
-    let secret = [];
     const length = shs[0].data.length;
     const original_length = shs[0].original_length;
+    const secret = new Uint8Array(original_length);
     for (let i = 0; i < length; i++) {
-      const yvalues = [];
-      for (let i2 = 0; i2 < quorum; i2++) {yvalues[i2] = shs[i2].data[i];}
+      const yvalues = new Uint8Array(quorum);
+      for (let j = 0; j < quorum; j++) {yvalues[j] = shs[j].data[i];}
       const decoded = matrix.multiply_vector(decoder, yvalues);
-      if (secret.length + decoded.length < original_length) {
-        secret = secret.concat(decoded);
+      if ((i + 1) * quorum < original_length) {
+        secret.set(decoded, i * quorum);
       } else {
-        for (let i1 = 0; secret.length < original_length; i1++) {
-          secret.push(decoded[i1]);
+        for (let k = 0; ((i * quorum) + k) < original_length; k++) {
+          secret[(i * quorum) + k] = decoded[k];
         }
-        break;
       }
     }
     return secret;

@@ -1,3 +1,4 @@
 node_modules
 build/main.js
 build/suite1.js
+benchmarks/results.csv
