@@ -4,12 +4,11 @@ const krawczyk = function(shares, quorum, length) {
   const crypto = require('crypto');
   const krawczyk = new krawczyk_css.Configuration(shares, quorum);
   const text = crypto.randomBytes(length);
-  const encoded = krawczyk.encode(text);
-  return krawczyk.decode(encoded);
+  return krawczyk.encode(text);
 };
 
 module.exports = {
-  name: 'Krawczyk CSS (Encode + Decode)',
+  name: 'Krawczyk CSS (Encode only)',
   tests: [
     {
       name: 'n= 6; k=4; l=      100 bytes',

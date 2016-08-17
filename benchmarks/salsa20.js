@@ -12,20 +12,24 @@ module.exports = {
   name: 'Salsa20 Tests',
   tests: [
     {
-      name: 'Salsa20 with length 10^2',
+      name: 'Salsa20 with       100 bytes',
       fn: function() {return salsa20_enc(100);}
     },
     {
-      name: 'Salsa20 with length 10^3',
+      name: 'Salsa20 with     1.000 bytes',
       fn: function() {return salsa20_enc(1000);}
     },
     {
-      name: 'Salsa20 with length 10^4',
+      name: 'Salsa20 with    10.000 bytes',
       fn: function() {return salsa20_enc(10000);}
     },
     {
-      name: 'Salsa20 with length 10^5',
+      name: 'Salsa20 with   100.000 bytes',
       fn: function() {return salsa20_enc(100000);}
+    },
+    {
+      name: 'Salsa20 with 1.000.000 bytes',
+      fn: function() {return salsa20_enc(1000000);}
     }
   ]
 };
