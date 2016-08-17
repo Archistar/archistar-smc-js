@@ -2,7 +2,7 @@
 implements Shamir Perfect Secret Sharing
 */
 
-var shamir_pss = module.exports;
+const shamir_pss = module.exports;
 
 const gf256 = require('./gf256.js');
 const matrix = require('./matrix.js');

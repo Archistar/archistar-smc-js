@@ -2,7 +2,7 @@
 imitates the functionality of window.crypto.getRandomValues(), but always returns the same values for testing purposes
 */
 
-var fake_rng = module.exports;
+const fake_rng = module.exports;
 
 fake_rng.get_values_4 = function(a) {
   'use strict';

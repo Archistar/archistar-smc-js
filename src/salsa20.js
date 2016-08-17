@@ -3,7 +3,7 @@ an implementation of djb's Salsa20 according to spec:
 http://cr.yp.to/snuffle/spec.pdf
 */
 
-var salsa20 = module.exports;
+const salsa20 = module.exports;
 
 salsa20.add = function (a, b) {
   'use strict';
@@ -12,8 +12,8 @@ salsa20.add = function (a, b) {
 
 salsa20.rotl = function (u, c) {
   'use strict';
-  var shifted = (u << c) % 4294967296; // 2^32
-  var right = (u >>> (32 - c));
+  const shifted = (u << c) % 4294967296; // 2^32
+  const right = (u >>> (32 - c));
   return shifted ^ right;
 };
 

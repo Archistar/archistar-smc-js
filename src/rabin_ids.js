@@ -4,7 +4,7 @@ code is mostly taken from the Java version:
 https://github.com/Archistar/archistar-smc/blob/master/src/main/java/at/archistar/crypto/secretsharing/RabinIDS.java
 */
 
-var rabin_ids = module.exports;
+const rabin_ids = module.exports;
 
 const gf256 = require('./gf256.js');
 const matrix = require('./matrix.js');

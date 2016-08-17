@@ -5,7 +5,7 @@ https://github.com/Archistar/archistar-smc/blob/master/src/main/java/at/archista
 the lookup tables from the original are pregenerated into a separate file
 */
 
-var gf256 = module.exports;
+const gf256 = module.exports;
 
 const table = require('./table.js');
 

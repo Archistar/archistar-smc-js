@@ -1,7 +1,7 @@
 /*
 utility functions for GF256-matrices
 */
-var matrix = module.exports;
+const matrix = module.exports;
 
 const gf256 = require('./gf256.js');
 

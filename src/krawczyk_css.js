@@ -2,7 +2,7 @@
 an implementation of Krawczyk's Computationally Secure Secret Sharing
 http://courses.csail.mit.edu/6.857/2009/handouts/short-krawczyk.pdf
 */
-var krawczyk_css = module.exports;
+const krawczyk_css = module.exports;
 
 krawczyk_css.Configuration = function (shares, quorum, random) {
   const rabin_ids = require('./rabin_ids.js');
@@ -12,7 +12,7 @@ krawczyk_css.Configuration = function (shares, quorum, random) {
   const salsa20 = require('./salsa20.js');
   this.encode = function (secret) {
     'use strict';
-    var key_nonce = new Uint8Array(40);
+    let key_nonce = new Uint8Array(40);
     if (random === undefined) {
       const randomBytes = require('randombytes');
       key_nonce = randomBytes(40);

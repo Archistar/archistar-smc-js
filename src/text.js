@@ -2,7 +2,7 @@
 just helpers to convert javascript strings to byte arrays and back
 */
 
-var text = module.exports;
+const text = module.exports;
 
 text.string_to_byte_array = function (s) {
   'use strict';
