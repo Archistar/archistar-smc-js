@@ -95,11 +95,13 @@ salsa20.salsa20_k32 = function (k, n) {
 use this to encrypt and decrypt with Salsa20
 keys is Uint8Array of length 32 (that means: we only use Salsa20 with 32 byte keys)
 nonce is Uint8Array of length 8
-text is Uint8Array of length l % 64 == 0
+text can be of arbitrary length (will be auto-truncated)
 */
 salsa20.code = function (key, nonce, text) {
   'use strict';
+  const text_view = new DataView(text.buffer);
   const res = new Uint8Array(text.length);
+  const res_view = new DataView(res.buffer);
   let index = 0;
   const length = text.length;
   const key32 = new Uint32Array(8);
@@ -112,11 +114,17 @@ salsa20.code = function (key, nonce, text) {
   for (let block = 0; block < length; block = block + 64) {
     const expanded = salsa20.salsa20_k32(key32, [nonce32[0], nonce32[1], 0, block]);
     for (let i = 0; i < 16; i++) {
-      const exp0 = salsa20.littleendian_rev(expanded[i]);
-      res[index] = text[index] ^ exp0[0]; index++;
-      res[index] = text[index] ^ exp0[1]; index++;
-      res[index] = text[index] ^ exp0[2]; index++;
-      res[index] = text[index] ^ exp0[3]; index++;
+      if (index + 4 < length) {
+        // thanks to JavaScript's TypedArrays, we can just do this
+        res_view.setUint32(index, expanded[i] ^ text_view.getUint32(index));
+        index = index + 4;
+      } else {
+        // and have to do this only at the very end
+        const exp0 = salsa20.littleendian_rev(expanded[i]);
+        while (index < length) {
+          res[index] = text[index] ^ exp0[index]; index++;
+        }
+      }
     }
   }
   return res;
