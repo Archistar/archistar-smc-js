@@ -62,6 +62,10 @@ salsa20.littleendian_rev = function (x) {
   return b;
 };
 
+/*
+x and y are buffers with the same content initially
+when done, y is unchanged; x contains the result
+*/
 salsa20.salsa20 = function (x, y) {
   'use strict';
   salsa20.doubleround(x);
@@ -93,6 +97,22 @@ salsa20.salsa20_k32 = function (k, n) {
 };
 
 /*
+a special in-place version:
+in salsa20() we do 10 doublerounds and then add() the original -
+idea: create the original once and just change the block number
+(because key and nonce remain the same throughout )
+so we assume that buffer1 and buffer2 are Uint32Arrays of length 16
+and that buffer2 is set up like in salsa20_k32()
+when done, buffer2 is unchanged; buffer1 contains the result
+*/
+salsa20.salsa20_expand_inplace = function (buffer1, buffer2, block_number) {
+  'use strict';
+  buffer2[9] = block_number;
+  buffer1.set(buffer2);
+  salsa20.salsa20(buffer1, buffer2);
+};
+
+/*
 use this to encrypt and decrypt with Salsa20
 keys is Uint8Array of length 32 (that means: we only use Salsa20 with 32 byte keys)
 nonce is Uint8Array of length 8
@@ -112,16 +132,27 @@ salsa20.code = function (key, nonce, text) {
     }
   nonce32[0] = salsa20.littleendian(nonce[0], nonce[1], nonce[2], nonce[3]);
   nonce32[1] = salsa20.littleendian(nonce[4], nonce[5], nonce[6], nonce[7]);
+
+  // the buffers we will re-use throughout the coding
+  const buffer1 = new Uint32Array(16);
+  // in buffer2, only the block number will change
+  const buffer2 = new Uint32Array([
+    1634760805, key32[0],  key32[1],   key32[2],
+    key32[3],   857760878, nonce32[0], nonce32[1],
+    0,          0,         2036477234, key32[4],
+    key32[5],   key32[6],  key32[7],   1797285236
+  ]);
+
   for (let block = 0; block < length; block = block + 64) {
-    const expanded = salsa20.salsa20_k32(key32, [nonce32[0], nonce32[1], 0, block]);
+    salsa20.salsa20_expand_inplace(buffer1, buffer2, block);
     for (let i = 0; i < 16; i++) {
       if (index + 4 < length) {
         // thanks to JavaScript's TypedArrays, we can just do this
-        res_view.setUint32(index, expanded[i] ^ text_view.getUint32(index));
+        res_view.setUint32(index, buffer1[i] ^ text_view.getUint32(index));
         index = index + 4;
       } else {
         // and have to do this only at the very end
-        const exp0 = salsa20.littleendian_rev(expanded[i]);
+        const exp0 = salsa20.littleendian_rev(buffer1[i]);
         while (index < length) {
           res[index] = text[index] ^ exp0[index]; index++;
         }
