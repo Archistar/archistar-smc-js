@@ -1,25 +1,46 @@
-/*
-just copied over some tests to see how to use the sripts in the browser
-*/
-suite1 = {
-    'tables' : function (test) {
-      'use strict';
-      test.expect(1);
-      var table = require('../src/table');
-      test.notEqual(table.alogtable, undefined);
-      test.done();
-    },
-    'example test': function (test) {
-        'use strict';
-        test.expect(65280);
-        var gf256 = require('../src/gf256');
-        for (let a = 0; a <= 255; a++) {
-          for (let b = 1; b <= 255; b++) {
-            let q = gf256.div(a, b);
-            let p = gf256.mult(q, b);
-            test.equal(a, p);
-          }
-        }
-        test.done();
+randomText = function (length) {
+  'use strict';
+  const res = new Uint8Array(length);
+  if (length < 65536) {
+    window.crypto.getRandomValues(res);
+  } else {
+    const temp = new Uint8Array(65536);
+    let i = 0;
+    while (i < length) {
+      res.set(temp, i * 65536);
+      i = i + 65536;
     }
+  }
+  return res;
+};
+
+randomKey = function () {
+  'use strict';
+  const res = new Uint8Array(32);
+  window.crypto.getRandomValues(res);
+  return res;
+};
+
+randomNonce = function () {
+  'use strict';
+  const res = new Uint8Array(8);
+  window.crypto.getRandomValues(res);
+  return res;
+};
+
+fn1 = function(key, nonce, text) {
+  'use strict';
+  const salsa20 = require('./../src/salsa20.js');
+  return salsa20.code(key, nonce, text);
+};
+
+fn2 = function(length) {
+  'use strict';
+  const key = new Uint8Array(32);
+  window.crypto.getRandomValues(key);
+  const nonce = new Uint8Array(8);
+  window.crypto.getRandomValues(nonce);
+  const text = new Uint8Array(length);
+  window.crypto.getRandomValues(text);
+  return salsa20.code(key, nonce, text);
 };
