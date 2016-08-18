@@ -3,9 +3,14 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     benchmark: {
-      all: {
-        src: ['benchmarks/*.js'],
-        dest: 'benchmarks/results.csv'
+      krawczyk_css_encode: {
+        src: ['benchmarks/krawczyk_css-encode.js']
+      },
+      krawczyk_css: {
+        src: ['benchmarks/krawczyk_css.js']
+      },
+      salsa20: {
+        src: ['benchmarks/salsa20.js']
       }
     },
     browserify: {

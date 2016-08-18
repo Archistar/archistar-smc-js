@@ -1,11 +1,25 @@
-const salsa20_enc = function(length) {
+salsa20_enc = function(key, nonce, text) {
   'use strict';
   const salsa20 = require('./../src/salsa20.js');
-  const crypto = require('crypto');
-  const key = crypto.randomBytes(32);
-  const nonce = crypto.randomBytes(8);
-  const text = crypto.randomBytes(length);
   return salsa20.code(key, nonce, text);
+};
+
+randomKey = function() {
+  'use strict';
+  const crypto = require('crypto');
+  return crypto.randomBytes(32);
+};
+
+randomNonce = function() {
+  'use strict';
+  const crypto = require('crypto');
+  return crypto.randomBytes(8);
+};
+
+randomText = function(length) {
+  'use strict';
+  const crypto = require('crypto');
+  return crypto.randomBytes(length);
 };
 
 module.exports = {
@@ -13,23 +27,28 @@ module.exports = {
   tests: [
     {
       name: 'Salsa20 with       100 bytes',
-      fn: function() {return salsa20_enc(100);}
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(100);},
+      fn: function() {return salsa20_enc(key, nonce, text);}
     },
     {
       name: 'Salsa20 with     1.000 bytes',
-      fn: function() {return salsa20_enc(1000);}
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(1000);},
+      fn: function() {return salsa20_enc(key, nonce, text);}
     },
     {
       name: 'Salsa20 with    10.000 bytes',
-      fn: function() {return salsa20_enc(10000);}
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(10000);},
+      fn: function() {return salsa20_enc(key, nonce, text);}
     },
     {
       name: 'Salsa20 with   100.000 bytes',
-      fn: function() {return salsa20_enc(100000);}
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(100000);},
+      fn: function() {return salsa20_enc(key, nonce, text);}
     },
     {
       name: 'Salsa20 with 1.000.000 bytes',
-      fn: function() {return salsa20_enc(1000000);}
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(1000000);},
+      fn: function() {return salsa20_enc(key, nonce, text);}
     }
   ]
 };
