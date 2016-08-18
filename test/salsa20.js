@@ -181,32 +181,40 @@ exports.salsa20 = function(test) {
   'use strict';
   test.expect(3);
   const salsa20 = require('./../src/salsa20.js');
-  test.deepEqual(salsa20.salsa20(
-        new Uint32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])), new Uint32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]));
-  test.deepEqual(salsa20.salsa20(
-        new Uint32Array([
+
+  const a1_a = new Uint32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+  const a1_b = Uint32Array.from(a1_a);
+  salsa20.salsa20(a1_a, a1_b);
+  test.deepEqual(a1_a, new Uint32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]));
+
+  const a2_a = new Uint32Array([
         salsa20.littleendian(211,159,13,115), salsa20.littleendian(76,55,82,183), salsa20.littleendian(3,117,222,37), salsa20.littleendian(191,187,234,136),
         salsa20.littleendian(49,237,179,48), salsa20.littleendian(1,106,178,219), salsa20.littleendian(175,199,166,48), salsa20.littleendian(86,16,179,207),
         salsa20.littleendian(31,240,32,63), salsa20.littleendian(15,83,93,161), salsa20.littleendian(116,147,48,113), salsa20.littleendian(238,55,204,36),
-        salsa20.littleendian(79,201,235,79), salsa20.littleendian(3,81,156,47), salsa20.littleendian(203,26,244,243), salsa20.littleendian(88,118,104,54)])),
-        new Uint32Array([
+        salsa20.littleendian(79,201,235,79), salsa20.littleendian(3,81,156,47), salsa20.littleendian(203,26,244,243), salsa20.littleendian(88,118,104,54)]);
+  const a2_b = Uint32Array.from(a2_a);
+  salsa20.salsa20(a2_a, a2_b);
+  test.deepEqual(a2_a, new Uint32Array([
         salsa20.littleendian(109,42,178,168), salsa20.littleendian(156,240,248,238), salsa20.littleendian(168,196,190,203), salsa20.littleendian(26,110,170,154),
         salsa20.littleendian(29,29,150,26), salsa20.littleendian(150,30,235,249), salsa20.littleendian(190,163,251,48), salsa20.littleendian(69,144,51,57),
         salsa20.littleendian(118,40,152,157), salsa20.littleendian(180,57,27,94), salsa20.littleendian(107,42,236,35), salsa20.littleendian(27,111,114,114),
         salsa20.littleendian(219,236,232,135), salsa20.littleendian(111,155,110,18), salsa20.littleendian(24,232,95,158), salsa20.littleendian(179,19,48,202)
         ]));
-  test.deepEqual(salsa20.salsa20(
-        new Uint32Array([
+
+  const a3_a = new Uint32Array([
         salsa20.littleendian(88,118,104,54), salsa20.littleendian(79,201,235,79), salsa20.littleendian(3,81,156,47), salsa20.littleendian(203,26,244,243),
         salsa20.littleendian(191,187,234,136), salsa20.littleendian(211,159,13,115), salsa20.littleendian(76,55,82,183), salsa20.littleendian(3,117,222,37),
         salsa20.littleendian(86,16,179,207), salsa20.littleendian(49,237,179,48), salsa20.littleendian(1,106,178,219), salsa20.littleendian(175,199,166,48),
-        salsa20.littleendian(238,55,204,36), salsa20.littleendian(31,240,32,63), salsa20.littleendian(15,83,93,161), salsa20.littleendian(116,147,48,113)])),
-        new Uint32Array([
+        salsa20.littleendian(238,55,204,36), salsa20.littleendian(31,240,32,63), salsa20.littleendian(15,83,93,161), salsa20.littleendian(116,147,48,113)]);
+  const a3_b = Uint32Array.from(a3_a);
+  salsa20.salsa20(a3_a, a3_b);
+  test.deepEqual(a3_a, new Uint32Array([
         salsa20.littleendian(179,19,48,202), salsa20.littleendian(219,236,232,135), salsa20.littleendian(111,155,110,18), salsa20.littleendian(24,232,95,158),
         salsa20.littleendian(26,110,170,154), salsa20.littleendian(109,42,178,168), salsa20.littleendian(156,240,248,238), salsa20.littleendian(168,196,190,203),
         salsa20.littleendian(69,144,51,57), salsa20.littleendian(29,29,150,26), salsa20.littleendian(150,30,235,249), salsa20.littleendian(190,163,251,48),
         salsa20.littleendian(27,111,114,114), salsa20.littleendian(118,40,152,157), salsa20.littleendian(180,57,27,94), salsa20.littleendian(107,42,236,35)
         ]));
+
   test.done();
 };
 

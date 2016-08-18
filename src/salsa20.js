@@ -62,9 +62,8 @@ salsa20.littleendian_rev = function (x) {
   return b;
 };
 
-salsa20.salsa20 = function (x) {
+salsa20.salsa20 = function (x, y) {
   'use strict';
-  const y = Uint32Array.from(x);
   salsa20.doubleround(x);
   salsa20.doubleround(x);
   salsa20.doubleround(x);
@@ -76,19 +75,21 @@ salsa20.salsa20 = function (x) {
   salsa20.doubleround(x);
   salsa20.doubleround(x);
   for (let i = 0; i < 16; i++) {
-    y[i] = salsa20.add(x[i],y[i]);
+    x[i] = salsa20.add(x[i],y[i]);
   }
-  return y;
 };
 
 salsa20.salsa20_k32 = function (k, n) {
   'use strict';
-  return salsa20.salsa20(new Uint32Array([
+  const a = new Uint32Array([
     1634760805, k[0], k[1], k[2],
     k[3], 857760878, n[0], n[1],
     n[2], n[3], 2036477234, k[4],
     k[5], k[6], k[7], 1797285236
-  ]));
+  ]);
+  const b = Uint32Array.from(a);
+  salsa20.salsa20(a, b);
+  return a;
 };
 
 /*
