@@ -9,7 +9,10 @@ share = function() {
   const krawczyk_css = require('./../src/krawczyk_css.js');
   const krawczyk = new krawczyk_css.Configuration(shares, quorum);
   const encoded = krawczyk.encode(new TextEncoder("utf-8").encode(input.value));
+  display_shares(encoded);
+};
 
+display_shares = function(encoded) {
   const paragraph = document.getElementById(3);
   while (paragraph.firstChild) {
     if (typeof(paragraph.firstChild.childNodes[1]) !== 'undefined') {
