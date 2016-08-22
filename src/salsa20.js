@@ -7,22 +7,20 @@ const salsa20 = module.exports;
 
 salsa20.add = function (a, b) {
   'use strict';
-  return (a + b) % 4294967296; // 2^32
+  return (((a + b)|0) % 4294967296)|0; // 2^32
 };
 
 salsa20.rotl = function (u, c) {
   'use strict';
-  const shifted = (u << c) % 4294967296; // 2^32
-  const right = (u >>> (32 - c));
-  return shifted ^ right;
+  return ((((u << c)|0) % 4294967296)|0 ^ (u >>> (32 - c)|0)|0)|0;
 };
 
 salsa20.quarterround = function (y, i0, i1, i2, i3) {
   'use strict';
-  y[i1] = y[i1] ^ (salsa20.rotl(salsa20.add(y[i0], y[i3]),  7));
-  y[i2] = y[i2] ^ (salsa20.rotl(salsa20.add(y[i1], y[i0]),  9));
-  y[i3] = y[i3] ^ (salsa20.rotl(salsa20.add(y[i2], y[i1]), 13));
-  y[i0] = y[i0] ^ (salsa20.rotl(salsa20.add(y[i3], y[i2]), 18));
+  y[i1] = ((y[i1]|0) ^ (salsa20.rotl(salsa20.add(y[i0]|0, y[i3]|0),  7)))|0;
+  y[i2] = ((y[i2]|0) ^ (salsa20.rotl(salsa20.add(y[i1]|0, y[i0]|0),  9)))|0;
+  y[i3] = ((y[i3]|0) ^ (salsa20.rotl(salsa20.add(y[i2]|0, y[i1]|0), 13)))|0;
+  y[i0] = ((y[i0]|0) ^ (salsa20.rotl(salsa20.add(y[i3]|0, y[i2]|0), 18)))|0;
 };
 
 salsa20.rowround = function (y) {
@@ -144,7 +142,23 @@ salsa20.code = function (key, nonce, text) {
   ]);
 
   for (let block = 0; block < length; block = block + 64) {
-    salsa20.salsa20_expand_inplace(buffer1, buffer2, block);
+    buffer2[9] = block;
+    buffer1.set(buffer2);
+    for (let i = 0; i < 10; i++) {
+      //columnround
+      salsa20.quarterround(buffer1,  0,  4,  8, 12);
+      salsa20.quarterround(buffer1,  5,  9, 13,  1);
+      salsa20.quarterround(buffer1, 10, 14,  2,  6);
+      salsa20.quarterround(buffer1, 15,  3,  7, 11);
+      //rowround
+      salsa20.quarterround(buffer1,  0,  1,  2,  3);
+      salsa20.quarterround(buffer1,  5,  6,  7,  4);
+      salsa20.quarterround(buffer1, 10, 11,  8,  9);
+      salsa20.quarterround(buffer1, 15, 12, 13, 14);
+    }
+    for (let i = 0; i < 16; i++) {
+      buffer1[i] = salsa20.add(buffer1[i]|0, buffer2[i]|0)|0;
+    }
     for (let i = 0; i < 16; i++) {
       if (index + 4 < length) {
         // thanks to JavaScript's TypedArrays, we can just do this

@@ -85,7 +85,7 @@
       const webcrypto1 = new Benchmark({
         name: 'webcrypto 1',
         defer: true,
-        options: {initCount: 1},
+        options: {initCount: 10, delay: 10},
         fn: function(deferred) {
           const prom = window.crypto.subtle.generateKey({
             name: "AES-GCM",
@@ -106,7 +106,7 @@
           h1.appendChild(p);
         }
       });
-      webcrypto1.run();
+      //webcrypto1.run();
 
     </script>
   </body>
