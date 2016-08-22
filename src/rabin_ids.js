@@ -9,8 +9,7 @@ const rabin_ids = module.exports;
 const gf256 = require('./gf256.js');
 const matrix = require('./matrix.js');
 
-// random is a source that implements the functionality of window.crypto.getRandomValues()
-// if it is undefined, window.crypto.getRandomValues() will be used
+// in accordance with the Java version, the secret is padded with zeroes
 rabin_ids.Configuration = function (shares, quorum) {
   this.encode = function (secret) {
     'use strict';
