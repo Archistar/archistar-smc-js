@@ -8,7 +8,7 @@ share = function() {
   const text = require('./../src/text.js');
   const krawczyk_css = require('./../src/krawczyk_css.js');
   const krawczyk = new krawczyk_css.Configuration(shares, quorum);
-  const encoded = krawczyk.encode(text.string_to_byte_array(input.value));
+  const encoded = krawczyk.encode(new TextEncoder("utf-8").encode(input.value));
 
   const paragraph = document.getElementById(3);
   while (paragraph.firstChild) {
@@ -60,6 +60,6 @@ recombine = function() {
   const krawczyk_css = require('./../src/krawczyk_css.js');
   const krawczyk = new krawczyk_css.Configuration(shares, quorum);
   const text = require('./../src/text.js');
-  const reconstructed = text.byte_array_to_string(krawczyk.decode(shs));
+  const reconstructed = new TextDecoder("utf-8").decode(krawczyk.decode(shs));
   alert(reconstructed);
 };
