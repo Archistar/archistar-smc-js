@@ -19,8 +19,8 @@ rabin_ids.Configuration = function (shares, quorum) {
     for (let k = 0; k < shares; k++) {shs[k] = {data: [], degree: k + 1, original_length: secret.length};}
     let i = 0;
 
+    const coeffs = new Uint8Array(quorum);
     for (let chunk = 0; chunk < chunks; chunk++) {
-      const coeffs = [];
       for (let j = 0; j < quorum; j++) {
         if (secret[i] !== undefined) {
           coeffs[j] = secret[i];
