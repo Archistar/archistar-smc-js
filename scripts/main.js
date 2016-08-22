@@ -2,6 +2,7 @@ share = function() {
   const shares = parseInt(document.getElementById(1).value, 10);
   const quorum = parseInt(document.getElementById(2).value, 10);
   if (quorum >= shares) {alert("number shares must be greater than quorum for reconstruction"); return;}
+  const webcrypto = document.getElementById(4).checked;
 
   const input = document.getElementById(0);
   const text = require('./../src/text.js');
