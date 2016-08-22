@@ -23,6 +23,18 @@ salsa20.quarterround = function (y, i0, i1, i2, i3) {
   y[i0] = ((y[i0]|0) ^ (salsa20.rotl(salsa20.add(y[i3]|0, y[i2]|0), 18)))|0;
 };
 
+salsa20.quarterround_ugly = function (y, i0, i1, i2, i3) {
+  'use strict';
+  const u0 = (((y[i0]|0) + (y[i3]|0)) % 4294967296)|0;
+  const u1 = (((y[i1]|0) + (y[i0]|0)) % 4294967296)|0;
+  const u2 = (((y[i2]|0) + (y[i1]|0)) % 4294967296)|0;
+  const u3 = (((y[i3]|0) + (y[i2]|0)) % 4294967296)|0;
+  y[i1] = ((y[i1]|0) ^ ((((u0 <<  7)|0) % 4294967296)|0 ^ (u0 >>> 25)|0))|0;
+  y[i2] = ((y[i2]|0) ^ ((((u1 <<  9)|0) % 4294967296)|0 ^ (u1 >>> 23)|0))|0;
+  y[i3] = ((y[i3]|0) ^ ((((u2 << 13)|0) % 4294967296)|0 ^ (u2 >>> 19)|0))|0;
+  y[i0] = ((y[i0]|0) ^ ((((u3 << 18)|0) % 4294967296)|0 ^ (u3 >>> 14)|0))|0;
+};
+
 salsa20.rowround = function (y) {
   'use strict';
   salsa20.quarterround(y,  0,  1,  2,  3);
@@ -146,15 +158,15 @@ salsa20.code = function (key, nonce, text) {
     buffer1.set(buffer2);
     for (let i = 0; i < 10; i++) {
       //columnround
-      salsa20.quarterround(buffer1,  0,  4,  8, 12);
-      salsa20.quarterround(buffer1,  5,  9, 13,  1);
-      salsa20.quarterround(buffer1, 10, 14,  2,  6);
-      salsa20.quarterround(buffer1, 15,  3,  7, 11);
+      salsa20.quarterround_ugly(buffer1,  0,  4,  8, 12);
+      salsa20.quarterround_ugly(buffer1,  5,  9, 13,  1);
+      salsa20.quarterround_ugly(buffer1, 10, 14,  2,  6);
+      salsa20.quarterround_ugly(buffer1, 15,  3,  7, 11);
       //rowround
-      salsa20.quarterround(buffer1,  0,  1,  2,  3);
-      salsa20.quarterround(buffer1,  5,  6,  7,  4);
-      salsa20.quarterround(buffer1, 10, 11,  8,  9);
-      salsa20.quarterround(buffer1, 15, 12, 13, 14);
+      salsa20.quarterround_ugly(buffer1,  0,  1,  2,  3);
+      salsa20.quarterround_ugly(buffer1,  5,  6,  7,  4);
+      salsa20.quarterround_ugly(buffer1, 10, 11,  8,  9);
+      salsa20.quarterround_ugly(buffer1, 15, 12, 13, 14);
     }
     for (let i = 0; i < 16; i++) {
       buffer1[i] = salsa20.add(buffer1[i]|0, buffer2[i]|0)|0;
