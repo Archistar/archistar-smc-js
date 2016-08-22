@@ -27,6 +27,28 @@ krawczyk_css.Configuration = function (shares, quorum, random) {
     }
     return shs;
   };
+  this.encode_webcrypto = function (secret) {
+    'use strict';
+    return new Promise( function (resolve, reject) {
+      window.crypto.subtle.generateKey({
+        name: "AES-GCM", length:256}, false, ["encrypt","decrypt"])
+      .then(function(key) {
+        return window.crypto.subtle.encrypt({
+          name: "AES-GCM",
+          iv: window.crypto.getRandomValues(new Uint8Array(16))
+        }, key, secret);
+      })
+      .then(function(encrypted_secret) {
+        const shs = this.rabin.encode(encrypted_secret);
+        const key_nonce_shares = this.shamir.encode(key_nonce);
+        for (let i = 0; i < shares; i++) {
+          shs[i].key_nonce_data = key_nonce_shares[i];
+        }
+        resolve(shs);
+      })
+      .catch(function(e) { reject(e); });
+    });
+  };
   this.decode = function (shs) {
     'use strict';
     const key_nonce_data = new Array(shs.length);

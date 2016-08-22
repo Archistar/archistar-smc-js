@@ -5,11 +5,16 @@ share = function() {
   const webcrypto = document.getElementById(4).checked;
 
   const input = document.getElementById(0);
-  const text = require('./../src/text.js');
   const krawczyk_css = require('./../src/krawczyk_css.js');
   const krawczyk = new krawczyk_css.Configuration(shares, quorum);
-  const encoded = krawczyk.encode(new TextEncoder("utf-8").encode(input.value));
-  display_shares(encoded);
+  const secret = new TextEncoder("utf-8").encode(input.value);
+  if (webcrypto) {
+    krawczyk.encode_webcrypto(secret)
+    .then(function(encoded) { display_shares(encoded); })
+    .catch(function (e) { alert(e); return; });
+  } else {
+    display_shares(krawczyk.encode(secret));
+  }
 };
 
 display_shares = function(encoded) {
@@ -62,7 +67,6 @@ recombine = function() {
 
   const krawczyk_css = require('./../src/krawczyk_css.js');
   const krawczyk = new krawczyk_css.Configuration(shares, quorum);
-  const text = require('./../src/text.js');
   const reconstructed = new TextDecoder("utf-8").decode(krawczyk.decode(shs));
   alert(reconstructed);
 };
