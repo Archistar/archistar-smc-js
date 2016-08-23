@@ -21,7 +21,7 @@ gf256.sub = function (a, b) {
 
 gf256.mult = function (a, b) {
   'use strict';
-  return table.alogtable[table.logtable[a] + table.logtable[b]];
+  return (table.alogtable[(table.logtable[a]|0) + (table.logtable[b]|0)]|0);
 };
 
 gf256.pow = function (a, p) {
@@ -48,11 +48,11 @@ gf256.div = function (a, b) {
 
 gf256.evaluateAt = function (coeffs, x) {
   'use strict';
-  const degree = coeffs.length - 1;
-  let result = coeffs[degree];
+  const degree = (coeffs.length - 1)|0;
+  let result = (coeffs[degree])|0;
 
   for (let i = degree - 1; i >= 0; i--){
-    result = gf256.add(gf256.mult(result, x), coeffs[i]);
+    result = (gf256.mult(result, x)|0) ^ (coeffs[i]|0);
   }
   return result;
 };
