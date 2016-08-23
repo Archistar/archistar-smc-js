@@ -15,7 +15,7 @@ rabin_ids.Configuration = function (shares, quorum) {
     'use strict';
     const chunks = Math.ceil(secret.length / quorum);
     const shs = new Array(shares);
-    for (let k = 0; k < shares; k++) {shs[k] = {data: []), degree: k + 1, original_length: secret.length};}
+    for (let k = 0; k < shares; k++) {shs[k] = {data: [], degree: k + 1, original_length: secret.length};}
     let i = 0;
 
     const coeffs = new Uint8Array(quorum);
