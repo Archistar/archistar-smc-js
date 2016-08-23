@@ -48,6 +48,7 @@ recombine = function() {
   const shares = parseInt(document.getElementById(1).value, 10);
   const quorum = parseInt(document.getElementById(2).value, 10);
   const shs = [];
+  const webcrypto = document.getElementById(4).checked;
 
   for (let i = 0; i < shares; i++) {
     if (par.children[i].childNodes[0].checked) {
@@ -67,6 +68,12 @@ recombine = function() {
 
   const krawczyk_css = require('./../src/krawczyk_css.js');
   const krawczyk = new krawczyk_css.Configuration(shares, quorum);
-  const reconstructed = new TextDecoder("utf-8").decode(krawczyk.decode(shs));
-  alert(reconstructed);
+  if (webcrypto) {
+    krawczyk.decode_webcrypto(shs)
+    .then(function (decoded) { alert(new TextDecoder("utf-8").decode(decoded)); })
+    .catch(function (e) { alert(e); });
+  } else {
+    const reconstructed = new TextDecoder("utf-8").decode(krawczyk.decode(shs));
+    alert(reconstructed);
+  }
 };
