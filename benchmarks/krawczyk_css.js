@@ -65,6 +65,26 @@ module.exports = {
       name: 'n=10; k=6; l=1.000.000 bytes',
       setup: function() {const text = randomText(1000000);},
       fn: function() {return krawczyk(10, 6, text);}
+    },
+    {
+      name: '(4/3):    4KB',
+      setup: function() {const text = randomText(4096);},
+      fn: function() {return krawczyk(4, 3, text);}
+    },
+    {
+      name: '(4/3):  128KB',
+      setup: function() {const text = randomText(131072);},
+      fn: function() {return krawczyk(4, 3, text);}
+    },
+    {
+      name: '(4/3):  512KB',
+      setup: function() {const text = randomText(524288);},
+      fn: function() {return krawczyk(4, 3, text);}
+    },
+    {
+      name: '(4/3): 4096KB',
+      setup: function() {const text = randomText(4194304);},
+      fn: function() {return krawczyk(4, 3, text);}
     }
   ]
 };
