@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = function(grunt) {
 
   grunt.initConfig({
@@ -13,13 +15,18 @@ module.exports = function(grunt) {
         src: ['benchmarks/salsa20.js']
       }
     },
-    browserify: {
-      dist: {
-        files: {
-          'build/main.js': ['scripts/main.js'],
-          'build/suite1.js': ['scripts/suite1.js']
-        }
-      }
+    webpack: {
+      options: {
+        entry: "./src/krawczyk_css.js",
+        output: {
+          path: path.resolve(__dirname, "dist"),
+          filename: "archistar.js",
+          library: "ArchistarJS",
+          libraryTarget: "var"
+        },
+        target: "web"
+      },
+      standard: {}
     },
     jshint: {
       files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js', 'benchmarks/**/*.js'],
@@ -33,7 +40,7 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-benchmark');
-  grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-webpack');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
 
@@ -42,7 +49,7 @@ module.exports = function(grunt) {
   //grunt.config.set('logtable', eval(grunt.file.read('scripts/generate_lookup_tables.js'))[0].toString());
   //grunt.config.set('alogtable', eval(grunt.file.read('scripts/generate_lookup_tables.js'))[1].toString());
 
-  grunt.registerTask('bench', ['jshint', 'benchmark:all']);
-  grunt.registerTask('default', ['jshint', 'browserify']);
-  grunt.registerTask('test', ['jshint', 'browserify', 'nodeunit']);
+  grunt.registerTask('bench', ['jshint', 'benchmark']);
+  grunt.registerTask('default', ['jshint', 'webpack']);
+  grunt.registerTask('test', ['jshint', 'nodeunit']);
 };

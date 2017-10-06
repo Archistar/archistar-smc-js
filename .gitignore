@@ -1,7 +1,3 @@
 node_modules
-build/main.js
-build/suite1.js
-build/benchmark.js
-build/lodash.js
-build/platform.js
 benchmarks/results.csv
+dist

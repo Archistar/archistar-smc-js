@@ -1,22 +1,23 @@
 {
-  "name": "javascript-test",
+  "name": "archistar-js",
   "version": "0.1.0",
   "description": "This is just a test. Do not adjust your set.",
-  "main": "src/test.js",
+  "main": "src/krawczyk-css.js",
   "dependencies": {},
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-benchmark": "^1.0.0",
-    "grunt-browserify": "^5.0.0",
     "grunt-contrib-jshint": "^1.0.0",
-    "grunt-contrib-nodeunit": "^1.0.0"
+    "grunt-contrib-nodeunit": "^1.0.0",
+    "grunt-webpack": "^3.0.2",
+    "webpack": "^3.6.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git@git.prismacloud.eu:archistar/JavaScriptTest.git"
+    "url": "git@git.prismacloud.eu:development/archistar-js.git"
   },
   "author": "Florian Wohner",
   "license": "ISC"
