@@ -1,8 +1,8 @@
 krawczyk = function(shares, quorum, text) {
   'use strict';
-  const krawczyk_css = require('./../dist/archistar.js');
+  const t = require('./../dist/test.js');
   const crypto = require('crypto');
-  const krawczyk = new krawczyk_css.Configuration(shares, quorum);
+  const krawczyk = new t.krawczyk_css.Configuration(shares, quorum);
   const encoded = krawczyk.encode(text);
   return krawczyk.decode(encoded);
 };
