@@ -1,16 +1,13 @@
 /*
 implements Shamir Perfect Secret Sharing
 */
-
-const shamir_pss = module.exports;
-
-const gf256 = require('./gf256.js');
-const matrix = require('./matrix.js');
+import * as gf256 from "./gf256.js";
+import * as matrix from "./matrix.js";
 
 // random is a source that implements the functionality of window.crypto.getRandomValues()
 // if it is undefined, window.crypto.getRandomValues() will be used
 // quorum must be an int (not a Number; if it is, then the Uint8Array will be of length zero!)
-shamir_pss.Configuration = function (shares, quorum, random) {
+export function Configuration (shares, quorum, random) {
   this.encode = function (secret) {
     'use strict';
     const shs = [];
@@ -46,4 +43,4 @@ shamir_pss.Configuration = function (shares, quorum, random) {
     }
     return secret;
   };
-};
+}

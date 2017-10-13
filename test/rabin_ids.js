@@ -1,8 +1,8 @@
 exports.roundtrip1 = function(test) {
   'use strict';
   test.expect(2);
-  const rabin_ids = require('./../src/rabin_ids.js');
-  const rabin = new rabin_ids.Configuration(10, 6);
+  const t = require('./../dist/test.js');
+  const rabin = new t.rabin_ids.Configuration(10, 6);
   const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210]);
   const res = rabin.encode(text);
   test.deepEqual(rabin.decode(res), text);
@@ -13,8 +13,8 @@ exports.roundtrip1 = function(test) {
 exports.roundtrip2 = function(test) {
   'use strict';
   test.expect(2);
-  const rabin_ids = require('./../src/rabin_ids.js');
-  const rabin = new rabin_ids.Configuration(10, 6);
+  const t = require('./../dist/test.js');
+  const rabin = new t.rabin_ids.Configuration(10, 6);
   const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
   const res = rabin.encode(text);
   test.deepEqual(rabin.decode(res), text);
@@ -25,8 +25,8 @@ exports.roundtrip2 = function(test) {
 exports.compare_with_java = function(test) {
   'use strict';
   test.expect(10);
-  const rabin_ids = require('./../src/rabin_ids.js');
-  const rabin = new rabin_ids.Configuration(10, 6);
+  const t = require('./../dist/test.js');
+  const rabin = new t.rabin_ids.Configuration(10, 6);
   const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
   const res = rabin.encode(text);
   test.deepEqual(res[0].data, [92, 88, 134]);

@@ -1,5 +1,3 @@
-const path = require('path');
-
 module.exports = function(grunt) {
 
   grunt.initConfig({
@@ -15,18 +13,24 @@ module.exports = function(grunt) {
         src: ['benchmarks/salsa20.js']
       }
     },
-    webpack: {
-      options: {
-        entry: "./src/krawczyk_css.js",
-        output: {
-          path: path.resolve(__dirname, "dist"),
-          filename: "archistar.js",
-          library: "ArchistarJS",
-          libraryTarget: "var"
-        },
-        target: "web"
+    rollup: {
+      options: {},
+      dist: {
+        dest: 'dist/archistar.js',
+        src: 'src/krawczyk_css.js',
+        options: {
+          format: 'umd',
+          moduleName: 'archistarJS',
+          external: ['randombytes']
+        }
       },
-      standard: {}
+      test: {
+        dest: 'dist/test.js',
+        src: 'src/test.js',
+        options: {
+          format: 'cjs'
+        }
+      }
     },
     jshint: {
       files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js', 'benchmarks/**/*.js'],
@@ -40,16 +44,16 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-benchmark');
-  grunt.loadNpmTasks('grunt-webpack');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
+  grunt.loadNpmTasks('grunt-rollup');
 
   //in case we ever need to regenerate the lookup tables:
   //uncomment the following two lines and do "grunt generate:lookup:table"
   //grunt.config.set('logtable', eval(grunt.file.read('scripts/generate_lookup_tables.js'))[0].toString());
   //grunt.config.set('alogtable', eval(grunt.file.read('scripts/generate_lookup_tables.js'))[1].toString());
 
-  grunt.registerTask('bench', ['jshint', 'benchmark']);
-  grunt.registerTask('default', ['jshint', 'webpack']);
-  grunt.registerTask('test', ['jshint', 'nodeunit']);
+  grunt.registerTask('bench', ['jshint', 'rollup:test', 'benchmark']);
+  grunt.registerTask('default', ['jshint', 'rollup:dist']);
+  grunt.registerTask('test', ['jshint', 'rollup:test', 'nodeunit']);
 };

@@ -3,14 +3,11 @@ this is a simple implementation of Rabin IDS;
 code is mostly taken from the Java version:
 https://github.com/Archistar/archistar-smc/blob/master/src/main/java/at/archistar/crypto/secretsharing/RabinIDS.java
 */
-
-const rabin_ids = module.exports;
-
-const gf256 = require('./gf256.js');
-const matrix = require('./matrix.js');
+import * as gf256 from "./gf256.js";
+import * as matrix from "./matrix.js";
 
 // in accordance with the Java version, the secret is padded with zeroes
-rabin_ids.Configuration = function (shares, quorum) {
+export function Configuration (shares, quorum) {
   this.encode = function (secret) {
     'use strict';
     const chunks = Math.ceil(secret.length / quorum);
@@ -57,4 +54,4 @@ rabin_ids.Configuration = function (shares, quorum) {
     }
     return secret;
   };
-};
+}

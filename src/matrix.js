@@ -1,10 +1,7 @@
+import * as gf256 from './gf256.js';
 /*
 utility functions for GF256-matrices
 */
-const matrix = module.exports;
-
-const gf256 = require('./gf256.js');
-
 
 /*
  Gauß-Jordan algorithm to invert a matrix
@@ -12,71 +9,71 @@ const gf256 = require('./gf256.js');
  the input parameter is not mutated; code taken from:
  https://github.com/Archistar/archistar-smc/blob/master/src/main/java/at/archistar/crypto/math/GenericMatrix.java
 */
-matrix.inverse = function (m) {
+export function inverse (m) {
   'use strict';
   let size = m.length;
-  const res = matrix.generate_identity(size);
-  const tmp = matrix.deep_copy(m);
+  const res = generate_identity(size);
+  const tmp = deep_copy(m);
 
   for (let i = 0; i < size; i++) {
 
-    if (tmp[i][i] === 0 && !matrix.find_and_swap_nonzero_in_row(i, size, tmp, res)) {
+    if (tmp[i][i] === 0 && !find_and_swap_nonzero_in_row(i, size, tmp, res)) {
       size = size - 1;
     }
 
-    matrix.normalize_row(tmp[i], res[i], gf256.inverse(tmp[i][i]));
+    normalize_row(tmp[i], res[i], gf256.inverse(tmp[i][i]));
 
     for (let j = 0; j < size; j++) {
       if (j === i) {continue;}
       const coeff = tmp[j][i];
       if (coeff === 0) {continue;}
-      matrix.mult_and_subtract(tmp[j], tmp[i], coeff);
-      matrix.mult_and_subtract(res[j], res[i], coeff);
+      mult_and_subtract(tmp[j], tmp[i], coeff);
+      mult_and_subtract(res[j], res[i], coeff);
     }
   }
 
   // we could assert here that tmp is now an identity matrix
 
   return res;
-};
+}
 
-matrix.mult_and_subtract = function (row, normalized, coeff) {
+function mult_and_subtract (row, normalized, coeff) {
   'use strict';
   const length = row.length;
   for (let i = 0; i < length; i++) {
     row[i] = gf256.sub(row[i], gf256.mult(normalized[i], coeff));
   }
-};
+}
 
-matrix.normalize_row = function (tmp_row, res_row, element) {
+function normalize_row (tmp_row, res_row, element) {
   'use strict';
   const length = tmp_row.length;
   for (let i = 0; i < length; i++) {
     tmp_row[i] = gf256.mult(tmp_row[i], element);
     res_row[i] = gf256.mult(res_row[i], element);
   }
-};
+}
 
-matrix.find_and_swap_nonzero_in_row = function (i, num_rows, tmp, res) {
+function find_and_swap_nonzero_in_row (i, num_rows, tmp, res) {
   'use strict';
   for (let j = i + 1; j < num_rows; j++) {
     if (tmp[j][i] !== 0) {
-      matrix.swap_rows(tmp, i, j);
-      matrix.swap_rows(res, i, j);
+      swap_rows(tmp, i, j);
+      swap_rows(res, i, j);
       return true;
     }
   }
   return false;
-};
+}
 
-matrix.swap_rows = function (matrix, first, second) {
+function swap_rows (matrix, first, second) {
   'use strict';
   const tmp = matrix[first];
   matrix[first] = matrix[second];
   matrix[second] = tmp;
-};
+}
 
-matrix.generate_identity = function (size) {
+export function generate_identity (size) {
   'use strict';
   const res = [];
   for (let i = 0; i < size; i++) {
@@ -90,9 +87,9 @@ matrix.generate_identity = function (size) {
     }
   }
   return res;
-};
+}
 
-matrix.deep_copy = function (m) {
+function deep_copy (m) {
   'use strict';
   const res = [];
   const rows = m.length;
@@ -104,9 +101,9 @@ matrix.deep_copy = function (m) {
     }
   }
   return res;
-};
+}
 
-matrix.is_identity = function (m) {
+export function is_identity (m) {
   'use strict';
   const size = m.length;
   for (let i = 0; i < size; i++) {
@@ -117,9 +114,9 @@ matrix.is_identity = function (m) {
     }
   }
   return true;
-};
+}
 
-matrix.multiply = function (a, b) {
+export function multiply (a, b) {
   'use strict';
   const res = [];
   const a_rows = a.length;
@@ -141,9 +138,9 @@ matrix.multiply = function (a, b) {
   }
 
   return res;
-};
+}
 
-matrix.multiply_vector = function (m, v) {
+export function multiply_vector (m, v) {
   'use strict';
   const res = [];
   const length = v.length;
@@ -155,9 +152,9 @@ matrix.multiply_vector = function (m, v) {
     res[i] = tmp;
   }
   return res;
-};
+}
 
-matrix.generate_decoder = function (size, values) {
+export function generate_decoder (size, values) {
   'use strict';
   const res = new Array(size);
   for (let i = 0; i < size; i++) {
@@ -166,5 +163,5 @@ matrix.generate_decoder = function (size, values) {
       res[i][j] = gf256.pow(values[i], j);
     }
   }
-  return matrix.inverse(res);
-};
+  return inverse(res);
+}

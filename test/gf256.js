@@ -1,9 +1,9 @@
 exports.tables = function(test) {
   'use strict';
   test.expect(2);
-  const table = require('./../src/table.js');
-  test.notStrictEqual(table.alogtable, undefined, "does alogtable exist?");
-  test.notStrictEqual(table.logtable, undefined, "does logtable exist?");
+  const t = require('./../dist/test.js');
+  test.notStrictEqual(t.table.alogtable, undefined, "does alogtable exist?");
+  test.notStrictEqual(t.table.logtable, undefined, "does logtable exist?");
   test.done();
 };
 
@@ -11,9 +11,9 @@ exports.tables = function(test) {
 exports.inverse_identity = function(test) {
   'use strict';
   test.expect(255);
-  const gf256 = require('./../src/gf256.js');
+  const t = require('./../dist/test.js');
   for (let a = 1; a <= 255; a++) {
-    test.equal(gf256.mult(a, gf256.inverse(a)), 1);
+    test.equal(t.gf256.mult(a, t.gf256.inverse(a)), 1);
   }
   test.done();
 };
@@ -23,11 +23,11 @@ exports.inverse_identity = function(test) {
 exports.mul_div_identity = function(test) {
   'use strict';
   test.expect(65280);
-  const gf256 = require('./../src/gf256.js');
+  const t = require('./../dist/test.js');
   for (let a = 0; a <= 255; a++) {
     for (let b = 1; b <= 255; b++) {
-      let q = gf256.div(a, b);
-      let p = gf256.mult(q, b);
+      let q = t.gf256.div(a, b);
+      let p = t.gf256.mult(q, b);
       test.equal(a, p);
     }
   }
@@ -37,13 +37,13 @@ exports.mul_div_identity = function(test) {
 exports.rolling_product = function(test) {
   'use strict';
   test.expect(65280);
-  const gf256 = require('./../src/gf256.js');
+  const t = require('./../dist/test.js');
   for (let a = 1; a <= 255; a++) {
     let product = 1;
     for (let p = 0; p <= 255; p++) {
-      let r = gf256.pow(a, p);
+      let r = t.gf256.pow(a, p);
       test.equal(r, product);
-      product = gf256.mult(product, a);
+      product = t.gf256.mult(product, a);
     }
   }
   test.done();

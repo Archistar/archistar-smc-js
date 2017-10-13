@@ -1,7 +1,7 @@
 salsa20_enc = function(key, nonce, text) {
   'use strict';
-  const salsa20 = require('./../src/salsa20.js');
-  return salsa20.code(key, nonce, text);
+  const t = require('./../dist/test.js');
+  return t.salsa20.code(key, nonce, text);
 };
 
 randomKey = function() {
