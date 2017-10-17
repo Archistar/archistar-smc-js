@@ -9,8 +9,14 @@ module.exports = function(grunt) {
       krawczyk_css: {
         src: ['benchmarks/krawczyk_css.js']
       },
+      rabin_ids: {
+        src: ['benchmarks/rabin_ids.js']
+      },
       salsa20: {
         src: ['benchmarks/salsa20.js']
+      },
+      shamir_pss: {
+        src: ['benchmarks/shamir_pss.js']
       }
     },
     rollup: {
