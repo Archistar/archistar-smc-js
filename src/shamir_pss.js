@@ -8,19 +8,28 @@ import * as matrix from "./matrix.js";
 // if it is undefined, window.crypto.getRandomValues() will be used
 // quorum must be an int (not a Number; if it is, then the Uint8Array will be of length zero!)
 export function Configuration (shares, quorum, random) {
-  this.encode = function (secret) {
+  this.encode = (random === undefined) ?
+    function (secret) {
     'use strict';
     const shs = [];
-    for (let k = 0; k < shares; k++) {shs[k] = {data: [], degree: k + 1};}
+    for (let k = 0; k < shares; k++) {shs[k] = {data: new Uint8Array(secret.length), degree: k + 1};}
+    var coeffs;
+    const crypto = require('crypto');
     for (let i = 0; i < secret.length; i++) {
-      let coeffs = new Uint8Array(quorum);
-      for (let i = 0; i < quorum; i++) {coeffs[i] = 0;}
-      if (random === undefined) {
-        const crypto = require('crypto');
-        coeffs = crypto.randomBytes(quorum);
-      } else {
-        random(coeffs);
+      coeffs = crypto.randomBytes(quorum);
+      coeffs[0] = secret[i];
+      for (let n = 0; n < shares; n++) {
+        shs[n].data[i] = gf256.evaluateAt(coeffs, n + 1);
       }
+    }
+    return shs;
+  } : function (secret) {
+    'use strict';
+    const shs = [];
+    for (let k = 0; k < shares; k++) {shs[k] = {data: new Uint8Array(secret.length), degree: k + 1};}
+    const coeffs = new Uint8Array(quorum);
+    for (let i = 0; i < secret.length; i++) {
+      random(coeffs);
       coeffs[0] = secret[i];
       for (let n = 0; n < shares; n++) {
         shs[n].data[i] = gf256.evaluateAt(coeffs, n + 1);
@@ -33,13 +42,12 @@ export function Configuration (shares, quorum, random) {
     const xvalues = [];
     for (let i0 = 0; i0 < shs.length; i0++) {xvalues[i0] = shs[i0].degree;}
     const decoder = matrix.generate_decoder(quorum, xvalues);
-    const secret = [];
     const length = shs[0].data.length;
+    const secret = new Uint8Array(length);
+    const yvalues = new Uint8Array(quorum);
     for (let i = 0; i < length; i++) {
-      const yvalues = [];
       for (let i2 = 0; i2 < quorum; i2++) {yvalues[i2] = shs[i2].data[i];}
-      const decoded = matrix.multiply_vector(decoder, yvalues);
-      secret.push(decoded[0]);
+      secret[i] = matrix.multiply_vector(decoder, yvalues)[0];
     }
     return secret;
   };
