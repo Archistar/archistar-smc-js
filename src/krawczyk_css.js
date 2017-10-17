@@ -13,8 +13,8 @@ export function Configuration (shares, quorum, random) {
     'use strict';
     let key_nonce = new Uint8Array(40);
     if (random === undefined) {
-      const randomBytes = require('randombytes');
-      key_nonce = randomBytes(40);
+      const crypto = require('crypto');
+      key_nonce = crypto.randomBytes(40);
     } else {
       random(key_nonce);
     }

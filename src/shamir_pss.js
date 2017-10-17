@@ -16,8 +16,8 @@ export function Configuration (shares, quorum, random) {
       let coeffs = new Uint8Array(quorum);
       for (let i = 0; i < quorum; i++) {coeffs[i] = 0;}
       if (random === undefined) {
-        const randomBytes = require('randombytes');
-        coeffs = randomBytes(2);
+        const crypto = require('crypto');
+        coeffs = crypto.randomBytes(quorum);
       } else {
         random(coeffs);
       }
