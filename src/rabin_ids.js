@@ -8,28 +8,43 @@ import * as matrix from "./matrix.js";
 
 // in accordance with the Java version, the secret is padded with zeroes
 export function Configuration (shares, quorum) {
+  this.multables = new Array(shares);
+  for (let i = 0; i < shares; i++) {
+    this.multables[i] = new Uint8Array(256);
+    for (let j = 0; j < 256; j++) {
+      this.multables[i][j] = gf256.mult(i + 1, j);
+    }
+  }
   this.encode = function (secret) {
     'use strict';
-    const chunks = Math.ceil(secret.length / quorum);
+    const chunks = secret.length % quorum == 0 ? (secret / quorum) : Math.ceil(secret.length / quorum);
     const shs = new Array(shares);
-    for (let k = 0; k < shares; k++) {shs[k] = {data: [], degree: k + 1, original_length: secret.length};}
-    let i = 0;
-
-    const coeffs = new Uint8Array(quorum);
-    for (let chunk = 0; chunk < chunks; chunk++) {
-      for (let j = 0; j < quorum; j++) {
-        if (secret[i] !== undefined) {
-          coeffs[j] = secret[i];
-          i++;
-        } else {
-          coeffs[j] = 0;
+    for (let k = 0; k < shares; k++) {
+      shs[k] = {
+        data: new Uint8Array(chunks),
+        degree: k + 1,
+        original_length: secret.length
+      };
+    }
+    for (let x = 0; x < shares; x++) {
+      const output = shs[x].data;
+      const mult = this.multables[x];
+      let out = 0;
+      for (let i = quorum - 1; i < secret.length; i += quorum) {
+        let res = secret[i]|0;
+        for (let y = 1; y < quorum; y++) {
+          res = (secret[(i - y)|0]|0) ^ (mult[res]|0);
         }
+        output[out++] = res;
       }
-      for (let n = 0; n < shares; n++) {
-        shs[n].data[chunk] = gf256.evaluateAt(coeffs, n + 1);
+      if (secret.length % quorum != 0) {
+        let res = secret[secret.length - 1];
+        for (let y = secret.length - 2; y >= secret.length - secret.length % quorum; y--) {
+          res = secret[y] ^ mult[res];
+        }
+        output[out] = res;
       }
     }
-
     return shs;
   };
   this.decode = function (shs) {
