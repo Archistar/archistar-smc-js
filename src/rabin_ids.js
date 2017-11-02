@@ -29,20 +29,19 @@ export function Configuration (shares, quorum) {
     for (let x = 0; x < shares; x++) {
       const output = shs[x].data;
       const mult = this.multables[x];
-      let out = 0;
       for (let i = quorum - 1; i < secret.length; i += quorum) {
         let res = secret[i]|0;
         for (let y = 1; y < quorum; y++) {
           res = (secret[(i - y)|0]|0) ^ (mult[res]|0);
         }
-        output[out++] = res;
+        output[Math.floor(i / quorum)] = res;
       }
       if (secret.length % quorum != 0) {
         let res = secret[secret.length - 1];
         for (let y = secret.length - 2; y >= secret.length - secret.length % quorum; y--) {
           res = secret[y] ^ mult[res];
         }
-        output[out] = res;
+        output[Math.floor(secret.length / quorum)] = res;
       }
     }
     return shs;
