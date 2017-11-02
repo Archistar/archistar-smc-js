@@ -1,39 +1,52 @@
-exports.roundtrip1 = function(test) {
+exports.roundtrip_4_3 = function(test) {
   'use strict';
-  test.expect(2);
   const t = require('./../dist/test.js');
   const fake_rng = require('./../src/fake_rng.js');
-  const shamir = new t.shamir_pss.Configuration(10, 6, fake_rng.get_values_4);
-  const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210]);
-  const res = shamir.encode(text);
-  test.deepEqual(shamir.decode(res), text);
-  test.deepEqual(shamir.decode([res[5],res[3],res[8],res[0],res[2],res[6]]), text);
+  const shamir = new t.shamir_pss.Configuration(4, 3, fake_rng.get_values_4);
+  const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
+  test.expect(text.length * 5);
+  for (let end = 1; end <= text.length; end++) {
+    let trunc = text.subarray(0, end);
+    let res = shamir.encode(trunc);
+    test.deepEqual(shamir.decode(res), trunc);
+    test.deepEqual(shamir.decode([res[0],res[1],res[2]]), trunc);
+    test.deepEqual(shamir.decode([res[0],res[1],res[3]]), trunc);
+    test.deepEqual(shamir.decode([res[0],res[2],res[3]]), trunc);
+    test.deepEqual(shamir.decode([res[1],res[2],res[3]]), trunc);
+  }
   test.done();
 };
 
-exports.roundtrip2 = function(test) {
+exports.roundtrip_10_6 = function(test) {
   'use strict';
-  test.expect(2);
   const t = require('./../dist/test.js');
   const fake_rng = require('./../src/fake_rng.js');
   const shamir = new t.shamir_pss.Configuration(10, 6, fake_rng.get_values_4);
   const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
-  const res = shamir.encode(text);
-  test.deepEqual(shamir.decode(res), text);
-  test.deepEqual(shamir.decode([res[5],res[3],res[8],res[0],res[2],res[6]]), text);
+  test.expect(text.length);
+  for (let end = 1; end <= text.length; end++) {
+    let trunc = text.subarray(0, end);
+    let res = shamir.encode(trunc);
+    test.deepEqual(shamir.decode(res), trunc);
+  }
   test.done();
 };
 
-exports.roundtrip2_realRNG = function(test) {
+exports.roundtrip_4_3_realRNG = function(test) {
   'use strict';
-  test.expect(2);
   const t = require('./../dist/test.js');
-  const fake_rng = require('./../src/fake_rng.js');
-  const shamir = new t.shamir_pss.Configuration(10, 6);
+  const shamir = new t.shamir_pss.Configuration(4, 3);
   const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
-  const res = shamir.encode(text);
-  test.deepEqual(shamir.decode(res), text);
-  test.deepEqual(shamir.decode([res[5],res[3],res[8],res[0],res[2],res[6]]), text);
+  test.expect(text.length * 5);
+  for (let end = 1; end <= text.length; end++) {
+    let trunc = text.subarray(0, end);
+    let res = shamir.encode(trunc);
+    test.deepEqual(shamir.decode(res), trunc);
+    test.deepEqual(shamir.decode([res[0],res[1],res[2]]), trunc);
+    test.deepEqual(shamir.decode([res[0],res[1],res[3]]), trunc);
+    test.deepEqual(shamir.decode([res[0],res[2],res[3]]), trunc);
+    test.deepEqual(shamir.decode([res[1],res[2],res[3]]), trunc);
+  }
   test.done();
 };
 
