@@ -17,7 +17,7 @@ export function Configuration (shares, quorum) {
   }
   this.encode = function (secret) {
     'use strict';
-    const chunks = secret.length % quorum == 0 ? (secret / quorum) : Math.ceil(secret.length / quorum);
+    const chunks = secret.length % quorum == 0 ? (secret.length / quorum) : Math.ceil(secret.length / quorum);
     const shs = new Array(shares);
     for (let k = 0; k < shares; k++) {
       shs[k] = {
