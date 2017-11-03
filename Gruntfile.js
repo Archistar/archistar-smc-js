@@ -1,3 +1,6 @@
+const uglify = require('rollup-plugin-uglify');
+const uglify_es = require('uglify-es');
+
 module.exports = function(grunt) {
 
   grunt.initConfig({
@@ -28,6 +31,16 @@ module.exports = function(grunt) {
           format: 'umd',
           moduleName: 'archistarJS',
           external: ['randombytes']
+        }
+      },
+      mini: {
+        dest: 'dist/archistar.min.js',
+        src: 'src/krawczyk_css.js',
+        options: {
+          format: 'umd',
+          moduleName: 'archistarJS',
+          external: ['randombytes'],
+          plugins: [uglify({}, uglify_es.minify)]
         }
       },
       test: {
@@ -62,4 +75,5 @@ module.exports = function(grunt) {
   grunt.registerTask('bench', ['jshint', 'rollup:test', 'benchmark']);
   grunt.registerTask('default', ['jshint', 'rollup:dist']);
   grunt.registerTask('test', ['jshint', 'rollup:test', 'nodeunit']);
+  grunt.registerTask('mini', ['jshint', 'rollup:mini']);
 };

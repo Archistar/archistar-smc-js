@@ -9,7 +9,9 @@
     "grunt-benchmark": "^1.0.0",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-nodeunit": "^1.0.0",
-    "grunt-rollup": "^6.0.0"
+    "grunt-rollup": "^6.0.0",
+    "rollup-plugin-uglify": "^2.0.1",
+    "uglify-es": "^3.1.6"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
