@@ -47,7 +47,8 @@ module.exports = function(grunt) {
         dest: 'dist/test.js',
         src: 'src/test.js',
         options: {
-          format: 'cjs'
+          format: 'umd',
+          moduleName: 'archistarJS'
         }
       }
     },
