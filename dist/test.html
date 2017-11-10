@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Module Test</title>
+    <script src="test.js"></script>
+    <script src="lodash.js"></script>
+    <script src="platform.js"></script>
+    <script src="benchmark.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+
+      alert("Running Tests; outputs to the console");
+
+      const krawczyk = new archistarJS.krawczyk_css.Configuration(4,3);
+
+      Bench1 = Benchmark('Rabin Encode 4/3 64K', {
+        'setup': function() {
+          const text = crypto.getRandomValues(new Uint8Array(65536));
+        },
+        'fn': function() {
+          return krawczyk.encode(text);
+        }
+      });
+
+      Bench1.on('cycle', function(event) {
+        console.log(String(event.target));
+      }).run({ 'async': true });
+
+    </script>
+  </body>
+</html>
