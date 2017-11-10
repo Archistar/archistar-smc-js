@@ -6,20 +6,26 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     benchmark: {
-      krawczyk_css_encode: {
-        src: ['benchmarks/krawczyk_css-encode.js']
+      krawczyk_encode: {
+        src: ['benchmarks/krawczyk-encode.js']
       },
-      krawczyk_css: {
-        src: ['benchmarks/krawczyk_css.js']
+      krawczyk_decode: {
+        src: ['benchmarks/krawczyk-decode.js']
       },
-      rabin_ids: {
-        src: ['benchmarks/rabin_ids.js']
+      rabin_encode: {
+        src: ['benchmarks/rabin-encode.js']
+      },
+      rabin_decode: {
+        src: ['benchmarks/rabin-decode.js']
       },
       salsa20: {
         src: ['benchmarks/salsa20.js']
       },
-      shamir_pss: {
-        src: ['benchmarks/shamir_pss.js']
+      shamir_encode: {
+        src: ['benchmarks/shamir-encode.js']
+      },
+      shamir_decode: {
+        src: ['benchmarks/shamir-decode.js']
       }
     },
     rollup: {
