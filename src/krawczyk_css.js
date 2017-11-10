@@ -12,11 +12,13 @@ export function Configuration (shares, quorum, random) {
   this.encode = function (secret) {
     'use strict';
     let key_nonce = new Uint8Array(40);
-    if (random === undefined) {
+    if (random !== undefined) {
+      random(key_nonce);
+    } else if (typeof crypto !== 'undefined') {
+      crypto.getRandomValues(key_nonce);
+    } else {
       const crypto = require('crypto');
       key_nonce = crypto.randomBytes(40);
-    } else {
-      random(key_nonce);
     }
     const encrypted_secret = salsa20.code(key_nonce.slice(0,32), key_nonce.slice(32,40), secret);
     const shs = this.rabin.encode(encrypted_secret);

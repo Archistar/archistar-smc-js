@@ -8,15 +8,14 @@ import * as matrix from "./matrix.js";
 // if it is undefined, window.crypto.getRandomValues() will be used
 // quorum must be an int (not a Number; if it is, then the Uint8Array will be of length zero!)
 export function Configuration (shares, quorum, random) {
-  this.encode = (random === undefined) ?
+  this.encode = (random === undefined && typeof crypto !== 'undefined') ?
     function (secret) {
     'use strict';
     const shs = [];
     for (let k = 0; k < shares; k++) {shs[k] = {data: new Uint8Array(secret.length), degree: k + 1};}
-    var coeffs;
-    const crypto = require('crypto');
+    const coeffs = new Uint8Array(quorum);
     for (let i = 0; i < secret.length; i++) {
-      coeffs = crypto.randomBytes(quorum);
+      crypto.getRandomValues(coeffs);
       coeffs[0] = secret[i];
       for (let n = 0; n < shares; n++) {
         shs[n].data[i] = gf256.evaluateAt(coeffs, n + 1);
@@ -28,6 +27,11 @@ export function Configuration (shares, quorum, random) {
     const shs = [];
     for (let k = 0; k < shares; k++) {shs[k] = {data: new Uint8Array(secret.length), degree: k + 1};}
     const coeffs = new Uint8Array(quorum);
+    if (random === undefined) {
+      random = function(arr) {
+        return require('crypto').randomBytes(arr.length);
+      };
+    }
     for (let i = 0; i < secret.length; i++) {
       random(coeffs);
       coeffs[0] = secret[i];
