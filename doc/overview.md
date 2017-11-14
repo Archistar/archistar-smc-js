@@ -8,27 +8,31 @@ Development started from a blank slate, but with the **archistar-smc** (written 
 
 ## Initial results
 
-Performance, however, was disappointing:
+Performance, however, was (and is) disappointing:
 
 | `(4/3)`  | Encode    | Decode    |
 | -------- | --------- | --------- |
-| Shamir   | XXXX kB/s | XXXX kB/s |
-| Krawczyk | XXXX kB/s | XXXX kB/s |
-| Rabin    | XXXX kB/s | XXXX kB/s |
+| Shamir   |  123 kB/s | 2335 kB/s |
+| Krawczyk | 2867 kB/s | 2662 kB/s |
+| Rabin    | 5530 kB/s | 5325 kB/s |
+
+(Taken on a Core2 Duo E8400 @ 3.00GHz running Ubuntu 16.4 and Node.js 4.2.6)
 
 Optimizations that have yielded *major* performance improvements in the Java version, have had almost no impact in JavaScript.
 
 For comparison, these are the numbers for the Java version on the same machine:
 
-| `(4/3)`  | Encode    | Decode    |
-| -------- | --------- | --------- |
-| Shamir   | XXXX kB/s | XXXX kB/s |
-| Krawczyk | XXXX kB/s | XXXX kB/s |
-| Rabin    | XXXX kB/s | XXXX kB/s |
+| `(4/3)`  | Encode      | Decode     |
+| -------- | ----------- | ---------- |
+| Shamir   |  22212 kB/s | 21950 kB/s |
+| Krawczyk |  67147 kB/s | 38935 kB/s |
+| Rabin    | 169256 kB/s | 58264 kB/s |
 
 ## asm.js
 
 The usual method to achieve competitive performance on JavaScript platforms is **asm.js**. This means writing code in C/C++ and compiling it down to a very restricted subset of JavaScript that can be executed **very** efficiently by modern JavaScript VMs. It is claimed that with this approach, performance almost equal to native code can be achieved. We have found this to be true in our case.
+
+The necessary C code is a straightforward translation of the already existing code, as can be seen from a comparison with the Java version (that also parallelizes the execution):
 
 ```java
 IntStream.range(0, n).parallel().forEach(
