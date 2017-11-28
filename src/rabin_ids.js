@@ -5,45 +5,58 @@ https://github.com/Archistar/archistar-smc/blob/master/src/main/java/at/archista
 */
 import * as gf256 from "./gf256.js";
 import * as matrix from "./matrix.js";
+import asmod from "../dist/secret.js";
 
-// in accordance with the Java version, the secret is padded with zeroes
 export function Configuration (shares, quorum) {
-  this.multables = new Array(shares);
+  // multiplication tables; created here, then copied onto the asm.js/emscripten heap
+  // every time encode() runs, so that everything can be cleanly deallocated
+  this.multable = new Uint8Array(shares * 256);
   for (let i = 0; i < shares; i++) {
-    this.multables[i] = new Uint8Array(256);
     for (let j = 0; j < 256; j++) {
-      this.multables[i][j] = gf256.mult(i + 1, j);
+      this.multable[(i * 256) + j] = gf256.mult(i + 1, j);
     }
   }
+  this.asm = asmod();
   this.encode = function (secret) {
     'use strict';
-    const chunks = secret.length % quorum == 0 ? (secret.length / quorum) : Math.ceil(secret.length / quorum);
+    const chunks = Math.ceil(secret.length / quorum);
+
+    // copy the multiplication table onto the asm.js/emscripten heap
+    let mult = this.asm._malloc(shares * 256);
+    this.asm.HEAPU8.set(this.multable, mult);
+    
+    // copy the secret onto the asm.js/emscripten heap
+    let input = this.asm._malloc(secret.length);
+    this.asm.HEAPU8.set(secret, input);
+
+    // two arrays of pointers to the secret-shared data
+    // one on the asm.js/emscripten heap and one in JavaScript
+    let output = this.asm._malloc(shares * 4);
+    let pointers = new Array(shares);
+    for (let i = 0; i < shares; i++) {
+      let out = this.asm._malloc(chunks);
+      this.asm.setValue(output + (i * 4), out, '*');
+      pointers[i] = out;
+    }
+
+    this.asm._RabinEncode(input, secret.length, quorum, shares, output, mult);
+
+    // construct the output objects, get the secret-shared data
+    // out of the heap and free memory
     const shs = new Array(shares);
     for (let k = 0; k < shares; k++) {
       shs[k] = {
-        data: new Uint8Array(chunks),
+        data: this.asm.HEAPU8.slice(pointers[k], pointers[k] + chunks),
         degree: k + 1,
         original_length: secret.length
       };
+      this.asm._free(pointers[k]);
     }
-    for (let x = 0; x < shares; x++) {
-      const output = shs[x].data;
-      const mult = this.multables[x];
-      for (let i = quorum - 1; i < secret.length; i += quorum) {
-        let res = secret[i]|0;
-        for (let y = 1; y < quorum; y++) {
-          res = (secret[(i - y)|0]|0) ^ (mult[res]|0);
-        }
-        output[Math.floor(i / quorum)] = res;
-      }
-      if (secret.length % quorum != 0) {
-        let res = secret[secret.length - 1];
-        for (let y = secret.length - 2; y >= secret.length - secret.length % quorum; y--) {
-          res = secret[y] ^ mult[res];
-        }
-        output[Math.floor(secret.length / quorum)] = res;
-      }
-    }
+
+    this.asm._free(input);
+    this.asm._free(output);
+    this.asm._free(mult);
+
     return shs;
   };
   this.decode = function (shs) {
@@ -55,15 +68,13 @@ export function Configuration (shares, quorum) {
     const original_length = shs[0].original_length;
     const secret = new Uint8Array(original_length);
     for (let i = 0; i < length; i++) {
-      const yvalues = new Uint8Array(quorum);
-      for (let j = 0; j < quorum; j++) {yvalues[j] = shs[j].data[i];}
-      const decoded = matrix.multiply_vector(decoder, yvalues);
-      if ((i + 1) * quorum < original_length) {
-        secret.set(decoded, i * quorum);
-      } else {
-        for (let k = 0; ((i * quorum) + k) < original_length; k++) {
-          secret[(i * quorum) + k] = decoded[k];
+      for (let j = 0; j < quorum; j++) {
+        const dec = decoder[j];
+        var temp = gf256.mult(dec[0], shs[0].data[i]);
+        for (let x = 1; x < quorum; x++) {
+          temp = gf256.add(temp, gf256.mult(dec[x], shs[x].data[i]));
         }
+        secret[(i * quorum) + j] = temp;
       }
     }
     return secret;
