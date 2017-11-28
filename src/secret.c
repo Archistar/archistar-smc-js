@@ -38,22 +38,14 @@ void RabinEncode(uint8_t* in, size_t len, size_t k, size_t n, uint8_t** out_a, u
 
 void RabinDecode(uint8_t ** in_a, size_t len, size_t o_len, size_t k, uint8_t * out, uint8_t** decoder) {
 
-  for (size_t i = 0; i < len - 1; i++) {
+  for (size_t i = 0; i < len; i++) {
     for (size_t j = 0; j < k; j++) {
       uint8_t * dec = decoder[j];
       uint8_t temp = Mul(dec[0], in_a[0][i]);
       for (size_t x = 1; x < k; x++) {
         temp = temp ^ Mul(dec[x], in_a[x][i]);
       }
-      out[i * k + j] = temp;
-    }
-  }
-
-  size_t base = (len - 1);
-  for (size_t j = 0; j < o_len - len * k; j++) {
-    out[base + j] = Mul(decoder[j][0], in_a[0][base]);
-    for (size_t x = 1; x < k; x++) {
-      out[base*k+j] = out[base*k+j] ^ Mul(decoder[j][x], in_a[x][base]);
+      out[(i * k) + j] = temp;
     }
   }
 

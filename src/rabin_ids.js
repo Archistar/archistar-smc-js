@@ -66,17 +66,40 @@ export function Configuration (shares, quorum) {
     const decoder = matrix.generate_decoder(quorum, xvalues);
     const length = shs[0].data.length;
     const original_length = shs[0].original_length;
-    const secret = new Uint8Array(original_length);
-    for (let i = 0; i < length; i++) {
-      for (let j = 0; j < quorum; j++) {
-        const dec = decoder[j];
-        var temp = gf256.mult(dec[0], shs[0].data[i]);
-        for (let x = 1; x < quorum; x++) {
-          temp = gf256.add(temp, gf256.mult(dec[x], shs[x].data[i]));
-        }
-        secret[(i * quorum) + j] = temp;
-      }
+
+    // copy the first k input arrays and the decoder matrix
+    // onto the asm.js/emscripten heap
+    const inputs = this.asm._malloc(quorum * 4);
+    const dec = this.asm._malloc(quorum * 4);
+    let pointers_o = new Array(quorum);
+    let pointers_m = new Array(quorum);
+    for (let i = 0; i < quorum; i++) {
+      const input = this.asm._malloc(shs[i].data.length);
+      this.asm.HEAPU8.set(shs[i].data, input);
+      this.asm.setValue(inputs + (i * 4), input, '*');
+      pointers_o[i] = input;
+      const mat = this.asm._malloc(quorum);
+      this.asm.HEAPU8.set(decoder[i], mat);
+      this.asm.setValue(dec + (i * 4), mat, '*');
+      pointers_m[i] = mat;
     }
-    return secret;
+
+    // allocate the result buffer
+    const secret = this.asm._malloc(original_length);
+
+    this.asm._RabinDecode(inputs, length, original_length, quorum, secret, dec);
+
+    const result = this.asm.HEAPU8.slice(secret, secret + original_length);
+
+    this.asm._free(secret);
+    this.asm._free(dec);
+    this.asm._free(inputs);
+
+    for (let i = 0; i < quorum; i++) {
+      this.asm._free(pointers_o[i]);
+      this.asm._free(pointers_m[i]);
+    }
+
+    return result;
   };
 }
