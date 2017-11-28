@@ -75,9 +75,9 @@ function swap_rows (matrix, first, second) {
 
 export function generate_identity (size) {
   'use strict';
-  const res = [];
+  const res = new Array(size);
   for (let i = 0; i < size; i++) {
-    res[i] = [];
+    res[i] = new Uint8Array(size);
     for (let j = 0; j < size; j++) {
       if (i === j) {
         res[i][j] = 1;
@@ -91,11 +91,11 @@ export function generate_identity (size) {
 
 function deep_copy (m) {
   'use strict';
-  const res = [];
+  const res = new Array(m.length);
   const rows = m.length;
   for (let i = 0; i < rows; i++) {
-    res [i] = [];
     const columns = m[i].length;
+    res[i] = new Uint8Array(columns);
     for (let j = 0; j < columns; j++) {
       res[i][j] = m[i][j];
     }
@@ -118,12 +118,12 @@ export function is_identity (m) {
 
 export function multiply (a, b) {
   'use strict';
-  const res = [];
   const a_rows = a.length;
   const a_columns = a[0].length;
   const b_columns = b[0].length;
+  const res = new Array(a_rows);
   for (let i0 = 0; i0 < a_rows; i0++) {
-    res [i0] = [];
+    res [i0] = new Uint8Array(b_columns);
     for (let k0 = 0; k0 < b_columns; k0++) {
       res[i0][k0] = 0;
     }
@@ -142,8 +142,8 @@ export function multiply (a, b) {
 
 export function multiply_vector (m, v) {
   'use strict';
-  const res = [];
   const length = v.length;
+  const res = new Uint8Array(length);
   for (let i = 0; i < length; i++) {
     let tmp = 0;
     for (let j = 0; j < length; j++) {
