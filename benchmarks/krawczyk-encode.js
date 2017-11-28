@@ -1,35 +1,32 @@
-setup = function(shares, quorum) {
-  'use strict';
-  return new (require('./../dist/test.js')).krawczyk_css.Configuration(shares, quorum);
-};
-
 randomText = function(length) {
   'use strict';
   const crypto = require('crypto');
   return crypto.randomBytes(length);
 };
 
+engine = new (require('./../dist/test.js')).krawczyk_css.Configuration(4, 3);
+
 module.exports = {
   name: 'Krawczyk (Encode)',
   tests: [
     {
       name: '(4/3):    4KB',
-      setup: function() {const text = randomText(4096); const engine = setup(4,3);},
+      setup: function() {const text = randomText(4096);},
       fn: function() {return engine.encode(text);}
     },
     {
       name: '(4/3):  128KB',
-      setup: function() {const text = randomText(131072); const engine = setup(4,3);},
+      setup: function() {const text = randomText(131072);},
       fn: function() {return engine.encode(text);}
     },
     {
       name: '(4/3):  512KB',
-      setup: function() {const text = randomText(524288); const engine = setup(4,3);},
+      setup: function() {const text = randomText(524288);},
       fn: function() {return engine.encode(text);}
     },
     {
       name: '(4/3): 4096KB',
-      setup: function() {const text = randomText(4194304); const engine = setup(4,3);},
+      setup: function() {const text = randomText(4194304);},
       fn: function() {return engine.encode(text);}
     }
   ]
