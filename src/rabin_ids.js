@@ -89,8 +89,10 @@ export function Configuration (shares, quorum) {
 
     this.asm._RabinDecode(inputs, length, original_length, quorum, secret, dec);
 
+    // get the result out of the heap
     const result = this.asm.HEAPU8.slice(secret, secret + original_length);
 
+    // free everything we have allocated
     this.asm._free(secret);
     this.asm._free(dec);
     this.asm._free(inputs);
