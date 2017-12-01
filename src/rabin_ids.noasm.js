@@ -58,7 +58,7 @@ export function Configuration (shares, quorum) {
         const dec = decoder[j];
         var temp = gf256.mult(dec[0], shs[0].data[i]);
         for (let x = 1; x < quorum; x++) {
-          temp = gf256.add(temp, gf256.mult(dec[x], shs[x].data[i]));
+          temp = temp ^ gf256.mult(dec[x], shs[x].data[i]);
         }
         secret[(i * quorum) + j] = temp;
       }

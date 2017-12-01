@@ -31,14 +31,24 @@ export function Configuration (shares, quorum, random) {
   this.decode = function (shs) {
     'use strict';
     const xvalues = new Array(shs.length);
-    for (let i0 = 0; i0 < shs.length; i0++) {xvalues[i0] = shs[i0].degree;}
-    const decoder = matrix.generate_decoder(quorum, xvalues);
+    for (let i = 0; i < shs.length; i++) {xvalues[i] = shs[i].degree;}
+    const decoder = new Array(quorum);
+    for (let i = 0, m = matrix.generate_decoder(quorum, xvalues); i < quorum; i++) {
+      const dec = m[0][i];
+      const tab = new Uint8Array(256);
+      for (let j = 0; j < 256; j++) {
+        tab[j] = gf256.mult(dec, j);
+      }
+      decoder[i] = tab;
+    }
     const length = shs[0].data.length;
     const secret = new Uint8Array(length);
-    const yvalues = new Uint8Array(quorum);
     for (let i = 0; i < length; i++) {
-      for (let i2 = 0; i2 < quorum; i2++) {yvalues[i2] = shs[i2].data[i];}
-      secret[i] = matrix.multiply_vector(decoder, yvalues)[0];
+      let tmp = decoder[0][shs[0].data[i]];
+      for (let j = 1; j < quorum; j++) {
+        tmp = tmp ^ decoder[j][shs[j].data[i]];
+      }
+      secret[i] = tmp;
     }
     return secret;
   };
