@@ -12,33 +12,53 @@ export function Configuration (shares, quorum, random) {
   if (random === undefined) {
     random = rand.randomByte;
   }
+  this.multables = new Array(shares);
+  for (let i = 0; i < shares; i++) {
+    this.multables[i] = new Uint8Array(256);
+    for (let j = 0; j < 256; j++) {
+      this.multables[i][j] = gf256.mult(i + 1, j);
+    }
+  }
   this.encode = function (secret) {
     'use strict';
     const shs = new Array(shares);
     for (let k = 0; k < shares; k++) {shs[k] = {data: new Uint8Array(secret.length), degree: k + 1};}
-    const coeffs = new Uint8Array(quorum);
+    const coeffs = new Uint8Array(quorum - 1);
     for (let i = 0; i < secret.length; i++) {
-      coeffs[0] = secret[i];
-      for (let i = 1; i < quorum; i++) {
-        coeffs[i] = random();
+      for (let j = 0; j < quorum - 1; j++) {
+        coeffs[j] = random();
       }
-      for (let n = 0; n < shares; n++) {
-        shs[n].data[i] = gf256.evaluateAt(coeffs, n + 1);
+      for (let j = 0; j < shares; j++) {
+        let tmp = coeffs[0];
+        for (let y = 1; y < quorum - 1; y++) {
+          tmp = coeffs[y] ^ this.multables[j][tmp];
+        }
+        shs[j].data[i] = secret[i] ^ this.multables[j][tmp];
       }
     }
     return shs;
   };
   this.decode = function (shs) {
     'use strict';
-    const xvalues = [];
-    for (let i0 = 0; i0 < shs.length; i0++) {xvalues[i0] = shs[i0].degree;}
-    const decoder = matrix.generate_decoder(quorum, xvalues);
+    const xvalues = new Array(shs.length);
+    for (let i = 0; i < shs.length; i++) {xvalues[i] = shs[i].degree;}
+    const decoder = new Array(quorum);
+    for (let i = 0, m = matrix.generate_decoder(quorum, xvalues); i < quorum; i++) {
+      const dec = m[0][i];
+      const tab = new Uint8Array(256);
+      for (let j = 0; j < 256; j++) {
+        tab[j] = gf256.mult(dec, j);
+      }
+      decoder[i] = tab;
+    }
     const length = shs[0].data.length;
     const secret = new Uint8Array(length);
-    const yvalues = new Uint8Array(quorum);
     for (let i = 0; i < length; i++) {
-      for (let i2 = 0; i2 < quorum; i2++) {yvalues[i2] = shs[i2].data[i];}
-      secret[i] = matrix.multiply_vector(decoder, yvalues)[0];
+      let tmp = decoder[0][shs[0].data[i]];
+      for (let j = 1; j < quorum; j++) {
+        tmp = tmp ^ decoder[j][shs[j].data[i]];
+      }
+      secret[i] = tmp;
     }
     return secret;
   };
