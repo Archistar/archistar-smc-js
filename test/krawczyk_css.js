@@ -1,8 +1,7 @@
 exports.roundtrip_4_3 = function(test) {
   'use strict';
   const t = require('./../dist/test.js');
-  const fake_rng = require('./../src/fake_rng.js');
-  const krawczyk = new t.krawczyk_css.Configuration(4, 3, fake_rng.get_values_4);
+  const krawczyk = new t.krawczyk_css.Configuration(4, 3, () => 4);
   const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
   test.expect(text.length * 5);
   for (let end = 1; end <= text.length; end++) {
@@ -39,9 +38,8 @@ exports.roundtrip1 = function(test) {
   'use strict';
   test.expect(1);
   const t = require('./../dist/test.js');
-  const fake_rng = require('./../src/fake_rng.js');
   const crypto = require('crypto');
-  const krawczyk = new t.krawczyk_css.Configuration(10, 6, fake_rng.get_values_4);
+  const krawczyk = new t.krawczyk_css.Configuration(10, 6, () => 4);
   const text = crypto.randomBytes(4096);
   const encoded = krawczyk.encode(text);
   const decoded = krawczyk.decode(encoded);

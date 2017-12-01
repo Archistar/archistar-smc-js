@@ -1,8 +1,7 @@
 exports.roundtrip_4_3 = function(test) {
   'use strict';
   const t = require('./../dist/test.js');
-  const fake_rng = require('./../src/fake_rng.js');
-  const shamir = new t.shamir_pss.Configuration(4, 3, fake_rng.get_values_4);
+  const shamir = new t.shamir_pss.Configuration(4, 3, () => 4);
   const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
   test.expect(text.length * 5);
   for (let end = 1; end <= text.length; end++) {
@@ -20,8 +19,7 @@ exports.roundtrip_4_3 = function(test) {
 exports.roundtrip_10_6 = function(test) {
   'use strict';
   const t = require('./../dist/test.js');
-  const fake_rng = require('./../src/fake_rng.js');
-  const shamir = new t.shamir_pss.Configuration(10, 6, fake_rng.get_values_4);
+  const shamir = new t.shamir_pss.Configuration(10, 6, () => 4);
   const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
   test.expect(text.length);
   for (let end = 1; end <= text.length; end++) {
@@ -54,8 +52,7 @@ exports.compare_with_java = function(test) {
   'use strict';
   test.expect(10);
   const t = require('./../dist/test.js');
-  const fake_rng = require('./../src/fake_rng.js');
-  const shamir = new t.shamir_pss.Configuration(10, 6, fake_rng.get_values_4);
+  const shamir = new t.shamir_pss.Configuration(10, 6, () => 4);
   const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
   const res = shamir.encode(text);
   test.deepEqual(res[0].data, [6,7,60,36,61,120,41,38,102,57,5,13,127,237,214,194]);

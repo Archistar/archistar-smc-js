@@ -1,40 +1,27 @@
 import * as gf256 from "./gf256.js";
 import * as matrix from "./matrix.js";
+import * as rand from "./random.js";
 
 /**
  * @constructor
  * @param {number} shares - the number of shares to construct (aka 'n')
  * @param {number} quorum - the number of shares necessary for reconstruction (aka 'k')
- * @param {function} random - a function that returns a random byte-value
+ * @param {function} random - a function that returns a random byte-value; if undefined, our own randomByte will be used
  */
 export function Configuration (shares, quorum, random) {
-  this.encode = (random === undefined && typeof crypto !== 'undefined') ?
-    function (secret) {
+  if (random === undefined) {
+    random = rand.randomByte;
+  }
+  this.encode = function (secret) {
     'use strict';
-    const shs = [];
+    const shs = new Array(shares);
     for (let k = 0; k < shares; k++) {shs[k] = {data: new Uint8Array(secret.length), degree: k + 1};}
     const coeffs = new Uint8Array(quorum);
     for (let i = 0; i < secret.length; i++) {
-      crypto.getRandomValues(coeffs);
       coeffs[0] = secret[i];
-      for (let n = 0; n < shares; n++) {
-        shs[n].data[i] = gf256.evaluateAt(coeffs, n + 1);
+      for (let i = 1; i < quorum; i++) {
+        coeffs[i] = random();
       }
-    }
-    return shs;
-  } : function (secret) {
-    'use strict';
-    const shs = [];
-    for (let k = 0; k < shares; k++) {shs[k] = {data: new Uint8Array(secret.length), degree: k + 1};}
-    const coeffs = new Uint8Array(quorum);
-    if (random === undefined) {
-      random = function(arr) {
-        return require('crypto').randomBytes(arr.length);
-      };
-    }
-    for (let i = 0; i < secret.length; i++) {
-      random(coeffs);
-      coeffs[0] = secret[i];
       for (let n = 0; n < shares; n++) {
         shs[n].data[i] = gf256.evaluateAt(coeffs, n + 1);
       }
@@ -43,7 +30,7 @@ export function Configuration (shares, quorum, random) {
   };
   this.decode = function (shs) {
     'use strict';
-    const xvalues = [];
+    const xvalues = new Array(shs.length);
     for (let i0 = 0; i0 < shs.length; i0++) {xvalues[i0] = shs[i0].degree;}
     const decoder = matrix.generate_decoder(quorum, xvalues);
     const length = shs[0].data.length;

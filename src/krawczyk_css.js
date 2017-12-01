@@ -17,7 +17,9 @@ export function Configuration (shares, quorum, random) {
     'use strict';
     let key_nonce = new Uint8Array(40);
     if (random !== undefined) {
-      random(key_nonce);
+      for (let i = 0; i < 40; i++) {
+        key_nonce[i] = random();
+      }
     } else if (typeof crypto !== 'undefined') {
       crypto.getRandomValues(key_nonce);
     } else {
