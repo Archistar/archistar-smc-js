@@ -1,11 +1,11 @@
-/*
-this is a simple implementation of Rabin IDS;
-code is mostly taken from the Java version:
-https://github.com/Archistar/archistar-smc/blob/master/src/main/java/at/archistar/crypto/secretsharing/RabinIDS.java
-*/
 import * as gf256 from "./gf256.js";
 import * as matrix from "./matrix.js";
 
+/**
+ * @constructor
+ * @param {number} shares - the number of shares to construct (aka 'n')
+ * @param {number} quorum - the number of shares necessary for reconstruction (aka 'k')
+ */
 export function Configuration (shares, quorum) {
   this.multables = new Array(shares);
   for (let i = 0; i < shares; i++) {

@@ -1,12 +1,12 @@
-/*
-this is a simple implementation of Rabin IDS;
-code is mostly taken from the Java version:
-https://github.com/Archistar/archistar-smc/blob/master/src/main/java/at/archistar/crypto/secretsharing/RabinIDS.java
-*/
 import * as gf256 from "./gf256.js";
 import * as matrix from "./matrix.js";
 import asmod from "../dist/secret.js";
 
+/**
+ * @constructor
+ * @param {number} shares - the number of shares to construct (aka 'n')
+ * @param {number} quorum - the number of shares necessary for reconstruction (aka 'k')
+ */
 export function Configuration (shares, quorum) {
   // multiplication tables; created here, then copied onto the asm.js/emscripten heap
   // every time encode() runs, so that everything can be cleanly deallocated

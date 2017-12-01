@@ -1,12 +1,12 @@
-/*
-implements Shamir Perfect Secret Sharing
-*/
 import * as gf256 from "./gf256.js";
 import * as matrix from "./matrix.js";
 
-// random is a source that implements the functionality of window.crypto.getRandomValues()
-// if it is undefined, window.crypto.getRandomValues() will be used
-// quorum must be an int (not a Number; if it is, then the Uint8Array will be of length zero!)
+/**
+ * @constructor
+ * @param {number} shares - the number of shares to construct (aka 'n')
+ * @param {number} quorum - the number of shares necessary for reconstruction (aka 'k')
+ * @param {function} random - a function that returns a random byte-value
+ */
 export function Configuration (shares, quorum, random) {
   this.encode = (random === undefined && typeof crypto !== 'undefined') ?
     function (secret) {

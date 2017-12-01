@@ -2,10 +2,14 @@ import * as rabin_ids from "./rabin_ids.js";
 import * as shamir_pss from "./shamir_pss.js";
 import * as salsa20 from "./salsa20.js";
 
-/*
-an implementation of Krawczyk's Computationally Secure Secret Sharing
-http://courses.csail.mit.edu/6.857/2009/handouts/short-krawczyk.pdf
-*/
+/**
+ * an implementation of Krawczyk's Computationally Secure Secret Sharing
+ * http://courses.csail.mit.edu/6.857/2009/handouts/short-krawczyk.pdf
+ * @constructor
+ * @param {number} shares - the number of shares to construct (aka 'n')
+ * @param {number} quorum - the number of shares necessary for reconstruction (aka 'k')
+ * @param {function} random - a function that returns a random byte-value
+ */
 export function Configuration (shares, quorum, random) {
   this.rabin = new rabin_ids.Configuration(shares, quorum);
   this.shamir = new shamir_pss.Configuration(shares, quorum, random);
