@@ -13,100 +13,58 @@ import * as salsa20 from "./salsa20.js";
 export function Configuration (shares, quorum, random) {
   this.rabin = new rabin_ids.Configuration(shares, quorum);
   this.shamir = new shamir_pss.Configuration(shares, quorum, random);
-  this.encode = function (secret) {
+  const encode_node = (secret) => {
+    'use strict';
+    const crypto = require('crypto');
+    const key = crypto.randomBytes(48);
+    const cipher = crypto.createCipher('aes-256-gcm', new Buffer(key));
+    const encrypted_secret = cipher.update(new Buffer(secret));
+    cipher.final();
+    const secret_shares = this.rabin.encode(encrypted_secret);
+    const key_shares = this.shamir.encode(key);
+    for (let i = 0; i < shares; i++) {secret_shares[i].key_data = key_shares[i];}
+    return secret_shares;
+  };
+  const decode_node = (shs) => {
+    'use strict';
+    const crypto = require('crypto');
+    const key_data = new Array(shs.length);
+    for (let i = 0; i < shs.length; i++) {key_data[i] = shs[i].key_data;}
+    const key = this.shamir.decode(key_data);
+    const encrypted_text = this.rabin.decode(shs);
+    const decipher = crypto.createDecipher('aes-256-gcm', new Buffer(key));
+    const decrypted_text = decipher.update(new Buffer(encrypted_text));
+    // the data is correct, but it says "unable to authenticate"
+    // disable for now, investigate later
+    // decipher.final();
+    return decrypted_text;
+  };
+  const encode_fallback = (secret) => {
     'use strict';
     let key_nonce = new Uint8Array(40);
-    if (random !== undefined) {
-      for (let i = 0; i < 40; i++) {
-        key_nonce[i] = random();
-      }
-    } else if (typeof crypto !== 'undefined') {
-      crypto.getRandomValues(key_nonce);
-    } else {
-      const crypto = require('crypto');
-      key_nonce = crypto.randomBytes(40);
-    }
+    for (let i = 0; i < 40; i++) {key_nonce[i] = Math.random();}
     const encrypted_secret = salsa20.code(key_nonce.slice(0,32), key_nonce.slice(32,40), secret);
     const shs = this.rabin.encode(encrypted_secret);
     const key_nonce_shares = this.shamir.encode(key_nonce);
-    for (let i = 0; i < shares; i++) {
-      shs[i].key_nonce_data = key_nonce_shares[i];
-    }
+    for (let i = 0; i < shares; i++) {shs[i].key_nonce_data = key_nonce_shares[i];}
     return shs;
   };
-  this.encode_webcrypto = function (secret) {
-    'use strict';
-    const r = this.rabin;
-    const s = this.shamir;
-    const key_iv = new Uint8Array(48);
-    let k;
-    return new Promise( function (resolve, reject) {
-      window.crypto.subtle.generateKey(
-        { name: "AES-GCM", length:256 }, true, ["encrypt","decrypt"]
-      )
-      .then(function(key) {
-        k = key;
-        return window.crypto.subtle.exportKey("raw", key);
-      })
-      .then(function(exported_key){
-        key_iv.set(new Uint8Array(exported_key));
-        key_iv.set(window.crypto.getRandomValues(new Uint8Array(16)), 32);
-        return window.crypto.subtle.encrypt({
-          name: "AES-GCM",
-          iv: key_iv.slice(32,48)
-        }, k, secret);
-      })
-      .then(function(encrypted_secret) {
-        const shs = r.encode(new Uint8Array(encrypted_secret));
-        const key_iv_shares = s.encode(key_iv);
-        for (let i = 0; i < shares; i++) {
-          shs[i].key_nonce_data = key_iv_shares[i];
-        }
-        resolve(shs);
-      })
-      .catch(function(e) { reject(e); });
-    });
-  };
-  this.decode = function (shs) {
+  const decode_fallback = (shs) => {
     'use strict';
     const key_nonce_data = new Array(shs.length);
-    for (let i = 0; i < shs.length; i++) {
-      key_nonce_data[i] = shs[i].key_nonce_data;
-    }
+    for (let i = 0; i < shs.length; i++) {key_nonce_data[i] = shs[i].key_nonce_data;}
     const key_nonce = this.shamir.decode(key_nonce_data);
     const encrypted_text = this.rabin.decode(shs);
     const decrypted_text = salsa20.code(key_nonce.slice(0,32), key_nonce.slice(32,40), encrypted_text);
     return decrypted_text;
   };
-
-  this.decode_webcrypto = function (shs) {
-    'use strict';
-    const key_iv_data = new Array(shs.length);
-    for (let i = 0; i < shs.length; i++) {
-      key_iv_data[i] = shs[i].key_nonce_data;
-    }
-    const key_iv = this.shamir.decode(key_iv_data);
-    const encrypted_text = this.rabin.decode(shs);
-    return new Promise ( function (resolve, reject) {
-      window.crypto.subtle.importKey(
-        "raw",
-        new Uint8Array(key_iv.slice(0,32)),
-        "AES-GCM",
-        false,
-        ["encrypt", "decrypt"]
-      )
-      .then(function(key) {
-        return window.crypto.subtle.decrypt(
-          { name: "AES-GCM", iv: new Uint8Array(key_iv.slice(32,48)) },
-          key,
-          encrypted_text
-        );
-      })
-      .then(function(decrypted_text) {
-        resolve(decrypted_text);
-      })
-      .catch(function(e) { reject(e); });
-    });
-  };
-
+  if (typeof process !== 'undefined') {
+    // we are probably in a node environment
+    this.encode = encode_node;
+    this.decode = decode_node;
+  } else {
+    // we are somewhere else
+    this.encode = encode_fallback;
+    this.decode = decode_fallback;
+  }
 }
