@@ -10,7 +10,7 @@ export function add (a, b) {
 
 export function rotl (u, c) {
   'use strict';
-  return ((((u << c)|0) % 4294967296)|0 ^ (u >>> (32 - c)|0)|0)|0;
+  return ((((u << c)|0) % 4294967296)|0 | (u >>> (32 - c)|0)|0)|0;
 }
 
 export function quarterround (y, i0, i1, i2, i3) {
@@ -19,18 +19,6 @@ export function quarterround (y, i0, i1, i2, i3) {
   y[i2] = ((y[i2]|0) ^ (rotl(add(y[i1]|0, y[i0]|0),  9)))|0;
   y[i3] = ((y[i3]|0) ^ (rotl(add(y[i2]|0, y[i1]|0), 13)))|0;
   y[i0] = ((y[i0]|0) ^ (rotl(add(y[i3]|0, y[i2]|0), 18)))|0;
-}
-
-function quarterround_ugly (y, i0, i1, i2, i3) {
-  'use strict';
-  const u0 = (((y[i0]|0) + (y[i3]|0)) % 4294967296)|0;
-  const u1 = (((y[i1]|0) + (y[i0]|0)) % 4294967296)|0;
-  const u2 = (((y[i2]|0) + (y[i1]|0)) % 4294967296)|0;
-  const u3 = (((y[i3]|0) + (y[i2]|0)) % 4294967296)|0;
-  y[i1] = ((y[i1]|0) ^ ((((u0 <<  7)|0) % 4294967296)|0 ^ (u0 >>> 25)|0))|0;
-  y[i2] = ((y[i2]|0) ^ ((((u1 <<  9)|0) % 4294967296)|0 ^ (u1 >>> 23)|0))|0;
-  y[i3] = ((y[i3]|0) ^ ((((u2 << 13)|0) % 4294967296)|0 ^ (u2 >>> 19)|0))|0;
-  y[i0] = ((y[i0]|0) ^ ((((u3 << 18)|0) % 4294967296)|0 ^ (u3 >>> 14)|0))|0;
 }
 
 export function rowround (y) {
@@ -105,22 +93,6 @@ export function salsa20_k32 (k, n) {
 }
 
 /*
-a special in-place version:
-in salsa20() we do 10 doublerounds and then add() the original -
-idea: create the original once and just change the block number
-(because key and nonce remain the same throughout )
-so we assume that buffer1 and buffer2 are Uint32Arrays of length 16
-and that buffer2 is set up like in salsa20_k32()
-when done, buffer2 is unchanged; buffer1 contains the result
-*/
-function salsa20_expand_inplace (buffer1, buffer2, block_number) {
-  'use strict';
-  buffer2[9] = block_number;
-  buffer1.set(buffer2);
-  salsa20(buffer1, buffer2);
-}
-
-/*
 use this to encrypt and decrypt with Salsa20
 keys is Uint8Array of length 32 (that means: we only use Salsa20 with 32 byte keys)
 nonce is Uint8Array of length 8
@@ -128,60 +100,54 @@ text can be of arbitrary length (will be auto-truncated)
 */
 export function code (key, nonce, text) {
   'use strict';
-  const text_view = new DataView(text.buffer);
-  const res = new Uint8Array(text.length);
-  const res_view = new DataView(res.buffer);
-  let index = 0;
-  const length = text.length;
-  const key32 = new Uint32Array(8);
-  const nonce32 = new Uint32Array(2);
-  for (let i0 = 0; i0 < 8; i0++) {
-      key32[i0] = littleendian(key[i0*4], key[i0*4+1], key[i0*4+2], key[i0*4+3]);
-    }
-  nonce32[0] = littleendian(nonce[0], nonce[1], nonce[2], nonce[3]);
-  nonce32[1] = littleendian(nonce[4], nonce[5], nonce[6], nonce[7]);
+  const buffer_1 = new ArrayBuffer(64);
+  const buffer_2 = new ArrayBuffer(64);
+  const res = new Uint8Array(Math.ceil(text.length / 64) * 64);
+  const res_u32 = new Uint32Array(res.buffer);
+  res.set(text);
+  const buffer2_view = new DataView(buffer_2);
+  const key_view = new DataView(key.buffer);
+  const nonce_view = new DataView(nonce.buffer);
+  const buffer1 = new Uint32Array(buffer_1);
+  const buffer2 = new Uint32Array(buffer_2);
 
-  // the buffers we will re-use throughout the coding
-  const buffer1 = new Uint32Array(16);
-  // in buffer2, only the block number will change
-  const buffer2 = new Uint32Array([
-    1634760805, key32[0],  key32[1],   key32[2],
-    key32[3],   857760878, nonce32[0], nonce32[1],
-    0,          0,         2036477234, key32[4],
-    key32[5],   key32[6],  key32[7],   1797285236
-  ]);
+  buffer2_view.setUint32(0, 1634760805, true);
+  buffer2_view.setUint32(4, key_view.getUint32(0, true), true);
+  buffer2_view.setUint32(8, key_view.getUint32(4, true), true);
+  buffer2_view.setUint32(12, key_view.getUint32(8, true), true);
+  buffer2_view.setUint32(16, key_view.getUint32(12, true), true);
+  buffer2_view.setUint32(20, 857760878, true);
+  buffer2_view.setUint32(24, nonce_view.getUint32(0, true), true);
+  buffer2_view.setUint32(28, nonce_view.getUint32(4, true), true);
+  buffer2_view.setUint32(32, 0, true);
+  buffer2_view.setUint32(36, 0, true);
+  buffer2_view.setUint32(40, 2036477234, true);
+  buffer2_view.setUint32(44, key_view.getUint32(16, true), true);
+  buffer2_view.setUint32(48, key_view.getUint32(20, true), true);
+  buffer2_view.setUint32(52, key_view.getUint32(24, true), true);
+  buffer2_view.setUint32(56, key_view.getUint32(28, true), true);
+  buffer2_view.setUint32(60, 1797285236, true);
 
-  for (let block = 0; block < length; block = block + 64) {
-    buffer2[9] = block;
+  const blocks = Math.ceil(text.length / 64);
+  for (let block = 0; block < blocks; block++) {
+    buffer2_view.setUint32(36, block, true);
     buffer1.set(buffer2);
     for (let i = 0; i < 10; i++) {
       //columnround
-      quarterround_ugly(buffer1,  0,  4,  8, 12);
-      quarterround_ugly(buffer1,  5,  9, 13,  1);
-      quarterround_ugly(buffer1, 10, 14,  2,  6);
-      quarterround_ugly(buffer1, 15,  3,  7, 11);
+      quarterround(buffer2, 0,  4,  8, 12);
+      quarterround(buffer2, 5,  9, 13,  1);
+      quarterround(buffer2, 10, 14,  2,  6);
+      quarterround(buffer2, 15,  3,  7, 11);
       //rowround
-      quarterround_ugly(buffer1,  0,  1,  2,  3);
-      quarterround_ugly(buffer1,  5,  6,  7,  4);
-      quarterround_ugly(buffer1, 10, 11,  8,  9);
-      quarterround_ugly(buffer1, 15, 12, 13, 14);
+      quarterround(buffer2, 0,  1,  2,  3);
+      quarterround(buffer2, 5,  6,  7,  4);
+      quarterround(buffer2, 10, 11,  8,  9);
+      quarterround(buffer2, 15, 12, 13, 14);
     }
     for (let i = 0; i < 16; i++) {
-      buffer1[i] = add(buffer1[i]|0, buffer2[i]|0)|0;
-    }
-    for (let i = 0; i < 16; i++) {
-      if (index + 4 < length) {
-        // thanks to JavaScript's TypedArrays, we can just do this
-        res_view.setUint32(index, buffer1[i] ^ text_view.getUint32(index));
-        index = index + 4;
-      } else {
-        // and have to do this only at the very end
-        const exp0 = littleendian_rev(buffer1[i]);
-        while (index < length) {
-          res[index] = text[index] ^ exp0[index]; index++;
-        }
-      }
+      buffer1[i] += buffer2[i];
+      res_u32[block * 16 + i] ^= buffer1[i];
     }
   }
-  return res;
+  return res.slice(0, text.length);
 }

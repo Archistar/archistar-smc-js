@@ -240,17 +240,51 @@ exports.salsa20_k32 = function(test) {
   test.done();
 };
 
+exports.code0 = function(test) {
+  'use strict';
+  test.expect(512);
+  const t = require('./../dist/test.js');
+  const crypto = require('crypto');
+  for (let i = 1; i <= 256; i++) {
+    const key = crypto.randomBytes(32);
+    const nonce = crypto.randomBytes(8);
+    const text = crypto.randomBytes(i);
+    const encrypted = t.salsa20.code(key, nonce, text);
+    const decrypted = t.salsa20.code(key, nonce, encrypted);
+    test.notDeepEqual(encrypted, decrypted);
+    test.deepEqual(decrypted, text);
+  }
+  test.done();
+};
+
 exports.code = function(test) {
   'use strict';
-  test.expect(2);
+  test.expect(260);
   const t = require('./../dist/test.js');
   const crypto = require('crypto');
   const key = crypto.randomBytes(32);
   const nonce = crypto.randomBytes(8);
-  const text = crypto.randomBytes(1024);
+  const text = crypto.randomBytes(130);
+  for (let i = 0; i < 130; i++) {
+    const slice0 = text.subarray(i, 130).slice();
+    const slice1 = text.subarray(i, 130).slice();
+    const encrypted = t.salsa20.code(key, nonce, slice0);
+    const decrypted = t.salsa20.code(key, nonce, encrypted);
+    test.notDeepEqual(encrypted, decrypted);
+    test.deepEqual(decrypted, slice1);
+  }
+  test.done();
+};
+
+exports.cross = function(test) {
+  'use strict';
+  test.expect(1);
+  const t = require('./../dist/test.js');
+  const crypto = require('crypto');
+  const key = new Uint8Array([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]);
+  const nonce = new Uint8Array([2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]);
+  const text = new Uint8Array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
   const encrypted = t.salsa20.code(key, nonce, text);
-  const decrypted = t.salsa20.code(key, nonce, encrypted);
-  test.notDeepEqual(encrypted, decrypted);
-  test.deepEqual(decrypted, text);
+  test.deepEqual(encrypted, new Uint8Array([162, 211, 251, 45, 41, 173, 12, 40, 159, 161, 33, 174, 98, 203, 149]));
   test.done();
 };
