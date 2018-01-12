@@ -1,9 +1,3 @@
-salsa20_enc = function(key, nonce, text) {
-  'use strict';
-  const t = require('./../dist/test.js');
-  return t.salsa20.code(key, nonce, text);
-};
-
 randomKey = function() {
   'use strict';
   const crypto = require('crypto');
@@ -22,33 +16,50 @@ randomText = function(length) {
   return crypto.randomBytes(length);
 };
 
+t = require('./../dist/test.js');
+
 module.exports = {
   name: 'Salsa20 Tests',
   tests: [
     {
-      name: 'Salsa20 with       100 bytes',
-      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(100);},
-      fn: function() {return salsa20_enc(key, nonce, text);}
+      name: 'Salsa20_noasm  |     4KB',
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(4096);},
+      fn: function() {return t.salsa20_noasm.code(key, nonce, text);}
     },
     {
-      name: 'Salsa20 with     1.000 bytes',
-      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(1000);},
-      fn: function() {return salsa20_enc(key, nonce, text);}
+      name: 'Salsa20_asm    |     4KB',
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(4096);},
+      fn: function() {return t.salsa20.code(key, nonce, text);}
     },
     {
-      name: 'Salsa20 with    10.000 bytes',
-      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(10000);},
-      fn: function() {return salsa20_enc(key, nonce, text);}
+      name: 'Salsa20_noasm  |   128KB',
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(131072);},
+      fn: function() {return t.salsa20_noasm.code(key, nonce, text);}
     },
     {
-      name: 'Salsa20 with   100.000 bytes',
-      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(100000);},
-      fn: function() {return salsa20_enc(key, nonce, text);}
+      name: 'Salsa20_asm    |   128KB',
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(131072);},
+      fn: function() {return t.salsa20.code(key, nonce, text);}
     },
     {
-      name: 'Salsa20 with 1.000.000 bytes',
-      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(1000000);},
-      fn: function() {return salsa20_enc(key, nonce, text);}
+      name: 'Salsa20_noasm  |   512KB',
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(524288);},
+      fn: function() {return t.salsa20_noasm.code(key, nonce, text);}
+    },
+    {
+      name: 'Salsa20_asm    |   512KB',
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(524288);},
+      fn: function() {return t.salsa20.code(key, nonce, text);}
+    },
+    {
+      name: 'Salsa20_noasm  |  4096KB',
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(4194304);},
+      fn: function() {return t.salsa20_noasm.code(key, nonce, text);}
+    },
+    {
+      name: 'Salsa20_asm    |  4096KB',
+      setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(4194304);},
+      fn: function() {return t.salsa20.code(key, nonce, text);}
     }
   ]
 };
