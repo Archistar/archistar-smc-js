@@ -59,3 +59,25 @@ exports.roundtrip1_realRNG = function(test) {
   test.deepEqual(text, decoded);
   test.done();
 };
+
+exports.compare_asm_and_noasm = function(test) {
+  'use strict';
+  const crypto = require('crypto');
+  const t = require('./../dist/test.js');
+  const krawczyk_asm = new t.krawczyk_css.Configuration(4, 3, () => 4);
+  const krawczyk_noasm = new t.krawczyk_css_noasm.Configuration(4, 3, () => 4);
+  test.expect(512);
+  for (let i = 0; i < 128; i++) {
+    let text = crypto.randomBytes(i);
+    let enc_asm = krawczyk_asm.encode(text);
+    let enc_noasm = krawczyk_noasm.encode(text);
+    // no deepEqual between enc_asm and enc_noasm because of random keys
+    let dec_asm = krawczyk_asm.decode(enc_asm);
+    let dec_noasm = krawczyk_noasm.decode(enc_noasm);
+    test.deepEqual(dec_asm, text);
+    test.deepEqual(dec_noasm, text);
+    test.deepEqual(dec_asm, krawczyk_noasm.decode(enc_asm));
+    test.deepEqual(dec_noasm, krawczyk_asm.decode(enc_noasm));
+  }
+  test.done();
+};
