@@ -1,5 +1,6 @@
 import * as gf256 from "./gf256.js";
 import * as matrix from "./matrix.js";
+import * as heap from "./heap.js";
 
 /**
  * @constructor
@@ -14,26 +15,6 @@ export function Configuration (shares, quorum) {
       multable[(i * 256) + j] = gf256.mult(i + 1, j);
     }
   }
-  // the default (and persistent) heap
-  const default_heap_size = 1048576;
-  const default_heap = new ArrayBuffer(default_heap_size);
-  // "allocate" a heap of legal size
-  // or return the persistent default heap to make the garbage collector's life easier
-  // legal heap size according to http://asmjs.org/spec/latest/#linking-0 is currently:
-  // 2^n for n in [12, 24) or 2^24 * n for n ≥ 1
-  function allocate_heap(desired) {
-    'use strict';
-    let log = Math.log2(desired);
-    if (desired < default_heap_size) {
-      return default_heap;
-    } else if (log < 12) {
-      return new ArrayBuffer(4096);
-    } else if (log >= 24) {
-      return new ArrayBuffer(Math.ceil(desired / 16777216) * 16777216);
-    } else {
-      return new ArrayBuffer(Math.pow(2, Math.ceil(log)));
-    }
-  }
   function encode(secret) {
     'use strict';
 
@@ -43,7 +24,7 @@ export function Configuration (shares, quorum) {
     const out_base = secret.length + mult_len;
 
     // "allocate" asm.js heap and views to memory segments
-    const asm_heap = allocate_heap(secret.length + mult_len + (new_len * shares));
+    const asm_heap = heap.allocate(secret.length + mult_len + (new_len * shares));
     const input = new Uint8Array(asm_heap, 0, secret.length);
     const mult = new Uint8Array(asm_heap, secret.length, 256 * shares);
 
@@ -81,7 +62,7 @@ export function Configuration (shares, quorum) {
     const out_base = mult_base + mult_len;
 
     // "allocate" asm.js heap and views to memory segments
-    const asm_heap =allocate_heap(out_base + original_length);
+    const asm_heap = heap.allocate(out_base + original_length);
     const input = new Uint8Array(asm_heap, 0, mult_base);
     const mult = new Uint8Array(asm_heap, mult_base, mult_len);
     const output = new Uint8Array(asm_heap, out_base, original_length);
@@ -106,7 +87,7 @@ export function Configuration (shares, quorum) {
   }
   // edited artifact compiled from "secret.c"
   function asm(global, env, buffer) {
-  'use asm';
+    'use asm';
 
     var Math_imul = global.Math.imul;
     var HEAP8 = new global.Int8Array(buffer);
