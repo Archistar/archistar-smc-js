@@ -102,35 +102,39 @@ export function code (key, nonce, text) {
   'use strict';
   const buffer_1 = new ArrayBuffer(64);
   const buffer_2 = new ArrayBuffer(64);
+  const buffer_3 = new ArrayBuffer(64);
   const res = new Uint8Array(Math.ceil(text.length / 64) * 64);
   const res_u32 = new Uint32Array(res.buffer);
   res.set(text);
   const buffer2_view = new DataView(buffer_2);
+  const buffer3_view = new DataView(buffer_3);
   const key_view = new DataView(key.buffer);
   const nonce_view = new DataView(nonce.buffer);
   const buffer1 = new Uint32Array(buffer_1);
   const buffer2 = new Uint32Array(buffer_2);
+  const buffer3 = new Uint32Array(buffer_3);
 
-  buffer2_view.setUint32(0, 1634760805, true);
-  buffer2_view.setUint32(4, key_view.getUint32(0, true), true);
-  buffer2_view.setUint32(8, key_view.getUint32(4, true), true);
-  buffer2_view.setUint32(12, key_view.getUint32(8, true), true);
-  buffer2_view.setUint32(16, key_view.getUint32(12, true), true);
-  buffer2_view.setUint32(20, 857760878, true);
-  buffer2_view.setUint32(24, nonce_view.getUint32(0, true), true);
-  buffer2_view.setUint32(28, nonce_view.getUint32(4, true), true);
-  buffer2_view.setUint32(32, 0, true);
-  buffer2_view.setUint32(36, 0, true);
-  buffer2_view.setUint32(40, 2036477234, true);
-  buffer2_view.setUint32(44, key_view.getUint32(16, true), true);
-  buffer2_view.setUint32(48, key_view.getUint32(20, true), true);
-  buffer2_view.setUint32(52, key_view.getUint32(24, true), true);
-  buffer2_view.setUint32(56, key_view.getUint32(28, true), true);
-  buffer2_view.setUint32(60, 1797285236, true);
+  buffer3_view.setUint32(0, 1634760805, true);
+  buffer3_view.setUint32(4, key_view.getUint32(0, true), true);
+  buffer3_view.setUint32(8, key_view.getUint32(4, true), true);
+  buffer3_view.setUint32(12, key_view.getUint32(8, true), true);
+  buffer3_view.setUint32(16, key_view.getUint32(12, true), true);
+  buffer3_view.setUint32(20, 857760878, true);
+  buffer3_view.setUint32(24, nonce_view.getUint32(0, true), true);
+  buffer3_view.setUint32(28, nonce_view.getUint32(4, true), true);
+  buffer3_view.setUint32(32, 0, true);
+  buffer3_view.setUint32(36, 0, true);
+  buffer3_view.setUint32(40, 2036477234, true);
+  buffer3_view.setUint32(44, key_view.getUint32(16, true), true);
+  buffer3_view.setUint32(48, key_view.getUint32(20, true), true);
+  buffer3_view.setUint32(52, key_view.getUint32(24, true), true);
+  buffer3_view.setUint32(56, key_view.getUint32(28, true), true);
+  buffer3_view.setUint32(60, 1797285236, true);
 
   const blocks = Math.ceil(text.length / 64);
   for (let block = 0; block < blocks; block++) {
-    buffer2_view.setUint32(36, block, true);
+    buffer2.set(buffer3);
+    buffer2_view.setUint32(32, block, true);
     buffer1.set(buffer2);
     for (let i = 0; i < 10; i++) {
       //columnround
