@@ -2,6 +2,7 @@ exports.roundtrip_4_3 = function(test) {
   'use strict';
   const t = require('./../dist/test.js');
   const shamir = new t.shamir_pss.Configuration(4, 3, () => 4);
+  const shamir_noasm = new t.shamir_pss_noasm.Configuration(4, 3, () => 4);
   const text = new Uint8Array([2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
   test.expect(text.length * 5);
   for (let end = 1; end <= text.length; end++) {
@@ -65,5 +66,27 @@ exports.compare_with_java = function(test) {
   test.deepEqual(res[7].data, [92,93,102,126,103,34,115,124,60,99,95,87,37,183,140,152]);
   test.deepEqual(res[8].data, [86,87,108,116,109,40,121,118,54,105,85,93,47,189,134,146]);
   test.deepEqual(res[9].data, [2,3,56,32,57,124,45,34,98,61,1,9,123,233,210,198]);
+  test.done();
+};
+
+exports.compare_asm_and_noasm = function(test) {
+  'use strict';
+  const crypto = require('crypto');
+  const t = require('./../dist/test.js');
+  const shamir_asm = new t.shamir_pss.Configuration(4, 3, () => 4);
+  const shamir_noasm = new t.shamir_pss_noasm.Configuration(4, 3, () => 4);
+  test.expect(640);
+  for (let i = 0; i < 128; i++) {
+    let text = crypto.randomBytes(i);
+    let enc_asm = shamir_asm.encode(text);
+    let enc_noasm = shamir_noasm.encode(text);
+    test.deepEqual(enc_asm, enc_noasm);
+    let dec_asm = shamir_asm.decode(enc_asm);
+    let dec_noasm = shamir_noasm.decode(enc_noasm);
+    test.deepEqual(dec_asm, text);
+    test.deepEqual(dec_noasm, text);
+    test.deepEqual(dec_asm, shamir_noasm.decode(enc_asm));
+    test.deepEqual(dec_noasm, shamir_asm.decode(enc_noasm));
+  }
   test.done();
 };

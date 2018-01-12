@@ -49,3 +49,25 @@ exports.compare_with_java = function(test) {
   test.deepEqual(res[9].data, [25, 230, 160]);
   test.done();
 };
+
+exports.compare_asm_and_noasm = function(test) {
+  'use strict';
+  const crypto = require('crypto');
+  const t = require('./../dist/test.js');
+  const rabin_asm = new t.rabin_ids.Configuration(4, 3, () => 4);
+  const rabin_noasm = new t.rabin_ids_noasm.Configuration(4, 3, () => 4);
+  test.expect(640);
+  for (let i = 0; i < 128; i++) {
+    let text = crypto.randomBytes(i);
+    let enc_asm = rabin_asm.encode(text);
+    let enc_noasm = rabin_noasm.encode(text);
+    test.deepEqual(enc_asm, enc_noasm);
+    let dec_asm = rabin_asm.decode(enc_asm);
+    let dec_noasm = rabin_noasm.decode(enc_noasm);
+    test.deepEqual(dec_asm, text);
+    test.deepEqual(dec_noasm, text);
+    test.deepEqual(dec_asm, rabin_noasm.decode(enc_asm));
+    test.deepEqual(dec_noasm, rabin_asm.decode(enc_noasm));
+  }
+  test.done();
+};

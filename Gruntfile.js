@@ -54,14 +54,6 @@ module.exports = function(grunt) {
           format: 'umd',
           moduleName: 'archistarJS'
         }
-      },
-      test_noasm: {
-        dest: 'dist/test.js',
-        src: 'src/test.noasm.js',
-        options: {
-          format: 'umd',
-          moduleName: 'archistarJS'
-        }
       }
     },
     jshint: {
@@ -86,9 +78,7 @@ module.exports = function(grunt) {
   //grunt.config.set('alogtable', eval(grunt.file.read('scripts/generate_lookup_tables.js'))[1].toString());
 
   grunt.registerTask('bench', ['jshint', 'rollup:test', 'benchmark']);
-  grunt.registerTask('bench-noasm', ['jshint', 'rollup:test_noasm', 'benchmark']);
   grunt.registerTask('default', ['jshint', 'rollup:dist']);
   grunt.registerTask('test', ['jshint', 'rollup:test', 'nodeunit']);
-  grunt.registerTask('test-noasm', ['jshint', 'rollup:test_noasm', 'nodeunit']);
   grunt.registerTask('noasm', ['jshint', 'rollup:noasm']);
 };
