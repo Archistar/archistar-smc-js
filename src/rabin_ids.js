@@ -32,7 +32,7 @@ export function Configuration (shares, quorum) {
     input.set(secret);
     mult.set(multable);
 
-    const asm0 = asm({ Math: Math, Int8Array: Int8Array }, {}, asm_heap);
+    const asm0 = asm({ Math: Math, Int8Array: Int8Array, Uint8Array: Uint8Array }, {}, asm_heap);
     asm0._RabinEncode(0, secret.length, quorum, shares);
 
     // construct the output objects with secret-shared data copied out of the heap
@@ -80,212 +80,137 @@ export function Configuration (shares, quorum) {
       }
     }));
 
-    const asm0 = asm({ Math: Math, Int8Array: Int8Array }, {}, asm_heap);
+    const asm0 = asm({ Math: Math, Int8Array: Int8Array, Uint8Array: Uint8Array }, {}, asm_heap);
     asm0._RabinDecode(0, length, original_length, quorum);
 
     return output.slice();
   }
-  // edited artifact compiled from "secret.c"
-  function asm(global, env, buffer) {
-    'use asm';
-
-    var Math_imul = global.Math.imul;
-    var HEAP8 = new global.Int8Array(buffer);
-
-    function _RabinEncode($0,$1,$2,$3) {
-      $0 = $0|0;
-      $1 = $1|0;
-      $2 = $2|0;
-      $3 = $3|0;
-      var $$060$lcssa = 0, $$06071 = 0, $$06166 = 0, $$062$lcssa = 0, $$06265 = 0, $$06367 = 0, $$06477 = 0, $$072 = 0, $10 = 0, $11 = 0, $12 = 0, $13 = 0, $14 = 0, $15 = 0, $16 = 0, $17 = 0, $18 = 0, $19 = 0, $20 = 0, $21 = 0;
-      var $22 = 0, $23 = 0, $24 = 0, $25 = 0, $26 = 0, $27 = 0, $28 = 0, $29 = 0, $30 = 0, $31 = 0, $32 = 0, $33 = 0, $34 = 0, $35 = 0, $36 = 0, $37 = 0, $38 = 0, $39 = 0, $4 = 0, $40 = 0;
-      var $41 = 0, $42 = 0, $43 = 0, $44 = 0, $45 = 0, $46 = 0, $47 = 0, $5 = 0, $6 = 0, $7 = 0, $8 = 0, $9 = 0, $exitcond = 0, $exitcond82 = 0, $exitcond83 = 0, $not$ = 0;
-      $4 = ($3|0)==(0);
-      if ($4) {
-       return;
-      }
-      $5 = (($0) + ($1)|0);
-      $6 = $3 << 8;
-      $7 = (($5) + ($6)|0);
-      $8 = (($1>>>0) % ($2>>>0))&-1;
-      $9 = (($1>>>0) / ($2>>>0))&-1;
-      $not$ = ($8|0)!=(0);
-      $10 = $not$&1;
-      $11 = (($10) + ($9))|0;
-      $12 = (($2) + -1)|0;
-      $13 = ($12>>>0)<($1>>>0);
-      $14 = ($8|0)==(0);
-      $15 = (($1) + -1)|0;
-      $16 = (($0) + ($15)|0);
-      $17 = ($8>>>0)>(1);
-      $18 = ($2>>>0)>(1);
-      $$06477 = 0;
-      while(1) {
-       $19 = $$06477 << 8;
-       $20 = (($5) + ($19)|0);
-       $21 = Math_imul($11, $$06477)|0;
-       $22 = (($7) + ($21)|0);
-       if ($13) {
-        $$06367 = $12;
-        while(1) {
-         $23 = (($0) + ($$06367)|0);
-         $24 = HEAP8[$23>>0]|0;
-         if ($18) {
-          $$06166 = 1;$$06265 = $24;
-          while(1) {
-           $29 = (($$06367) - ($$06166))|0;
-           $30 = (($0) + ($29)|0);
-           $31 = HEAP8[$30>>0]|0;
-           $32 = $$06265&255;
-           $33 = (($20) + ($32)|0);
-           $34 = HEAP8[$33>>0]|0;
-           $35 = $34 ^ $31;
-           $36 = (($$06166) + 1)|0;
-           $exitcond = ($36|0)==($2|0);
-           if ($exitcond) {
-            $$062$lcssa = $35;
-            break;
-           } else {
-            $$06166 = $36;$$06265 = $35;
-           }
-          }
-         } else {
-          $$062$lcssa = $24;
-         }
-         $25 = (($$06367>>>0) / ($2>>>0))&-1;
-         $26 = (($22) + ($25)|0);
-         HEAP8[$26>>0] = $$062$lcssa;
-         $27 = (($$06367) + ($2))|0;
-         $28 = ($27>>>0)<($1>>>0);
-         if ($28) {
-          $$06367 = $27;
-         } else {
-          break;
-         }
-        }
-       }
-       if (!($14)) {
-        $37 = HEAP8[$16>>0]|0;
-        if ($17) {
-         $$06071 = $37;$$072 = 1;
-         while(1) {
-          $39 = (($15) - ($$072))|0;
-          $40 = (($0) + ($39)|0);
-          $41 = HEAP8[$40>>0]|0;
-          $42 = $$06071&255;
-          $43 = (($20) + ($42)|0);
-          $44 = HEAP8[$43>>0]|0;
-          $45 = $44 ^ $41;
-          $46 = (($$072) + 1)|0;
-          $exitcond82 = ($46|0)==($8|0);
-          if ($exitcond82) {
-           $$060$lcssa = $45;
-           break;
-          } else {
-           $$06071 = $45;$$072 = $46;
-          }
-         }
-        } else {
-         $$060$lcssa = $37;
-        }
-        $38 = (($22) + ($9)|0);
-        HEAP8[$38>>0] = $$060$lcssa;
-       }
-       $47 = (($$06477) + 1)|0;
-       $exitcond83 = ($47|0)==($3|0);
-       if ($exitcond83) {
-        break;
-       } else {
-        $$06477 = $47;
-       }
-      }
-      return;
-     }
-
-     function _RabinDecode($0,$1,$2,$3) {
-       $0 = $0|0;
-       $1 = $1|0;
-       $2 = $2|0;
-       $3 = $3|0;
-       var $$042$lcssa = 0, $$04245 = 0, $$04350 = 0, $$04447 = 0, $$046 = 0, $10 = 0, $11 = 0, $12 = 0, $13 = 0, $14 = 0, $15 = 0, $16 = 0, $17 = 0, $18 = 0, $19 = 0, $20 = 0, $21 = 0, $22 = 0, $23 = 0, $24 = 0;
-       var $25 = 0, $26 = 0, $27 = 0, $28 = 0, $29 = 0, $30 = 0, $31 = 0, $32 = 0, $33 = 0, $34 = 0, $4 = 0, $5 = 0, $6 = 0, $7 = 0, $8 = 0, $9 = 0, $exitcond = 0, $exitcond52 = 0, $exitcond53 = 0;
-       $4 = Math_imul($3, $1)|0;
-       $5 = (($0) + ($4)|0);
-       $6 = $3 << 8;
-       $7 = Math_imul($6, $3)|0;
-       $8 = (($5) + ($7)|0);
-       $9 = ($1|0)==(0);
-       if ($9) {
-        return;
-       }
-       $10 = ($3|0)==(0);
-       $11 = ($3>>>0)>(1);
-       $$04350 = 0;
-       while(1) {
-        if (!($10)) {
-         $12 = (($0) + ($$04350)|0);
-         $13 = Math_imul($$04350, $3)|0;
-         $$04447 = 0;
-         while(1) {
-          $15 = Math_imul($$04447, $6)|0;
-          $16 = (($5) + ($15)|0);
-          $17 = HEAP8[$12>>0]|0;
-          $18 = $17&255;
-          $19 = (($16) + ($18)|0);
-          $20 = HEAP8[$19>>0]|0;
-          if ($11) {
-           $$04245 = $20;$$046 = 1;
-           while(1) {
-            $24 = $$046 << 8;
-            $25 = (($16) + ($24)|0);
-            $26 = Math_imul($$046, $1)|0;
-            $27 = (($0) + ($26)|0);
-            $28 = (($27) + ($$04350)|0);
-            $29 = HEAP8[$28>>0]|0;
-            $30 = $29&255;
-            $31 = (($25) + ($30)|0);
-            $32 = HEAP8[$31>>0]|0;
-            $33 = $32 ^ $$04245;
-            $34 = (($$046) + 1)|0;
-            $exitcond = ($34|0)==($3|0);
-            if ($exitcond) {
-             $$042$lcssa = $33;
-             break;
-            } else {
-             $$04245 = $33;$$046 = $34;
-            }
-           }
-          } else {
-           $$042$lcssa = $20;
-          }
-          $21 = (($$04447) + ($13))|0;
-          $22 = (($8) + ($21)|0);
-          HEAP8[$22>>0] = $$042$lcssa;
-          $23 = (($$04447) + 1)|0;
-          $exitcond52 = ($23|0)==($3|0);
-          if ($exitcond52) {
-           break;
-          } else {
-           $$04447 = $23;
-          }
-         }
-        }
-        $14 = (($$04350) + 1)|0;
-        $exitcond53 = ($14|0)==($1|0);
-        if ($exitcond53) {
-         break;
-        } else {
-         $$04350 = $14;
-        }
-       }
-       return;
-      }
-
-    return {
-      _RabinEncode: _RabinEncode,
-      _RabinDecode: _RabinDecode
-    };
-  }
   this.encode = encode;
   this.decode = decode;
+}
+// artifact compiled from "secret.c"
+function asm (global, env, buffer) {
+  'use asm';
+  var a = new global.Int8Array(buffer);
+  var d = new global.Uint8Array(buffer);
+  var N = global.Math.imul;
+  function _RabinEncode(b, c, d, e) {
+    b = b | 0;
+    c = c | 0;
+    d = d | 0;
+    e = e | 0;
+    var f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0;
+    if (!e) return;
+    t = b + c | 0;
+    u = t + (e << 8) | 0;
+    v = (c >>> 0) % (d >>> 0) | 0;
+    n = (c >>> 0) / (d >>> 0) | 0;
+    o = n + ((v | 0) != 0 & 1) | 0;
+    k = d + -1 | 0;
+    l = d >>> 0 > 1;
+    p = (v | 0) == 0;
+    q = c + -1 | 0;
+    r = b + q | 0;
+    s = v >>> 0 > 1;
+    if (k >>> 0 < c >>> 0) j = 0; else {
+    i = 0;
+    do {
+      h = t + (i << 8) | 0;
+      j = u + (N(o, i) | 0) | 0;
+      if (!p) {
+      f = a[r >> 0] | 0;
+      if (s) {
+        g = 1;
+        do {
+        f = a[h + (f & 255) >> 0] ^ a[b + (q - g) >> 0];
+        g = g + 1 | 0;
+        } while ((g | 0) != (v | 0));
+      }
+      a[j + n >> 0] = f;
+      }
+      i = i + 1 | 0;
+    } while ((i | 0) != (e | 0));
+    return;
+    }
+    do {
+    i = t + (j << 8) | 0;
+    m = u + (N(o, j) | 0) | 0;
+    if (l) {
+      h = k;
+      do {
+      f = 1;
+      g = a[b + h >> 0] | 0;
+      do {
+        g = a[i + (g & 255) >> 0] ^ a[b + (h - f) >> 0];
+        f = f + 1 | 0;
+      } while ((f | 0) != (d | 0));
+      a[m + ((h >>> 0) / (d >>> 0) | 0) >> 0] = g;
+      h = h + d | 0;
+      } while (h >>> 0 < c >>> 0);
+    } else {
+      f = k;
+      do {
+      a[m + ((f >>> 0) / (d >>> 0) | 0) >> 0] = a[b + f >> 0] | 0;
+      f = f + d | 0;
+      } while (f >>> 0 < c >>> 0);
+    }
+    if (!p) {
+      f = a[r >> 0] | 0;
+      if (s) {
+      g = 1;
+      do {
+        f = a[i + (f & 255) >> 0] ^ a[b + (q - g) >> 0];
+        g = g + 1 | 0;
+      } while ((g | 0) != (v | 0));
+      }
+      a[m + n >> 0] = f;
+    }
+    j = j + 1 | 0;
+    } while ((j | 0) != (e | 0));
+    return;
+  }
+  function _RabinDecode(b, c, e, f) {
+    b = b | 0;
+    c = c | 0;
+    e = e | 0;
+    f = f | 0;
+    var g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0;
+    n = b + (N(f, c) | 0) | 0;
+    o = f << 8;
+    p = n + (N(o, f) | 0) | 0;
+    if (!c) return;
+    k = f >>> 0 > 1;
+    if (!f) return; else j = 0;
+    do {
+    l = b + j | 0;
+    m = N(j, f) | 0;
+    if (k) {
+      g = 0;
+      do {
+      i = n + (N(g, o) | 0) | 0;
+      e = a[i + (d[l >> 0] | 0) >> 0] | 0;
+      h = 1;
+      do {
+        e = a[i + (h << 8) + (d[b + (N(h, c) | 0) + j >> 0] | 0) >> 0] ^ e;
+        h = h + 1 | 0;
+      } while ((h | 0) != (f | 0));
+      a[p + (g + m) >> 0] = e;
+      g = g + 1 | 0;
+      } while ((g | 0) != (f | 0));
+    } else {
+      e = 0;
+      do {
+      i = n + (N(e, o) | 0) | 0;
+      a[p + (e + m) >> 0] = a[i + (d[l >> 0] | 0) >> 0] | 0;
+      e = e + 1 | 0;
+      } while ((e | 0) != (f | 0));
+    }
+    j = j + 1 | 0;
+    } while ((j | 0) != (c | 0));
+    return;
+  }
+  return {
+    _RabinEncode: _RabinEncode,
+    _RabinDecode: _RabinDecode
+  };
 }
