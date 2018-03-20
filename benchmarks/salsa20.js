@@ -22,42 +22,42 @@ module.exports = {
   name: 'Salsa20 Tests',
   tests: [
     {
-      name: 'Salsa20_noasm  |     4KB',
+      name: '>    4KB noasm',
       setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(4096);},
       fn: function() {return t.salsa20_noasm.code(key, nonce, text);}
     },
     {
-      name: 'Salsa20_asm    |     4KB',
+      name: '>    4KB   asm',
       setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(4096);},
       fn: function() {return t.salsa20.code(key, nonce, text);}
     },
     {
-      name: 'Salsa20_noasm  |   128KB',
+      name: '>  128KB noasm',
       setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(131072);},
       fn: function() {return t.salsa20_noasm.code(key, nonce, text);}
     },
     {
-      name: 'Salsa20_asm    |   128KB',
+      name: '>  128KB   asm',
       setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(131072);},
       fn: function() {return t.salsa20.code(key, nonce, text);}
     },
     {
-      name: 'Salsa20_noasm  |   512KB',
+      name: '>  512KB noasm',
       setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(524288);},
       fn: function() {return t.salsa20_noasm.code(key, nonce, text);}
     },
     {
-      name: 'Salsa20_asm    |   512KB',
+      name: '>  512KB   asm',
       setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(524288);},
       fn: function() {return t.salsa20.code(key, nonce, text);}
     },
     {
-      name: 'Salsa20_noasm  |  4096KB',
+      name: '> 4096KB noasm',
       setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(4194304);},
       fn: function() {return t.salsa20_noasm.code(key, nonce, text);}
     },
     {
-      name: 'Salsa20_asm    |  4096KB',
+      name: '> 4096KB   asm',
       setup: function() {const key = randomKey(); const nonce = randomNonce(); const text = randomText(4194304);},
       fn: function() {return t.salsa20.code(key, nonce, text);}
     }
