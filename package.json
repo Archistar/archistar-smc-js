@@ -1,7 +1,7 @@
 {
   "name": "archistar-js",
   "version": "0.1.0",
-  "description": "This is just a test. Do not adjust your set.",
+  "description": "A simple JavaScript-implementation of various secret sharing schemes (Shamir, Rabin, Krawczyk)",
   "main": "dist/archistar.js",
   "dependencies": {},
   "devDependencies": {
@@ -20,6 +20,7 @@
     "type": "git",
     "url": "git@git.prismacloud.eu:development/archistar-js.git"
   },
+  "keywords": ["secret sharing", "Shamir", "Rabin", "Krawczyk", "Secret Sharing Made Short"],
   "author": "Florian Wohner",
-  "license": "ISC"
+  "license": "EUPL-1.2"
 }
