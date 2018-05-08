@@ -114,3 +114,8 @@ emcc src/salsa20.c -o s.js -s ONLY_MY_CODE=1 -s EXPORTED_FUNCTIONS="['_Salsa20']
 ```
 
 The result was then - together with the necessary code to set up the asm.js heap - inserted into `rabin_ids.js` and `salsa20.js`.
+
+## Licence
+
+© 2016-2018 AIT Austrian Institute of Technology  
+Licensed under the [EUPL](https://joinup.ec.europa.eu/software/page/eupl)
