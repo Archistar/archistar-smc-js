@@ -115,6 +115,20 @@ emcc src/salsa20.c -o s.js -s ONLY_MY_CODE=1 -s EXPORTED_FUNCTIONS="['_Salsa20']
 
 The result was then - together with the necessary code to set up the asm.js heap - inserted into `rabin_ids.js` and `salsa20.js`.
 
+Shamir was not implemented in asm.js. It is only used for sharing the keys in Krawczyk, and for such small files, performance benefit would be negative because of the overhead of the asm.js heap. (For data of size 4kB, the asm versions of Rabin and Krawczyk are on average an order of magnitude slower than the handwritten noasm versions)
+
+### Current Performance
+
+| `(4/3)`        | Encode     | Decode     |
+| -------------- | ---------- | ---------- |
+| Shamir noasm   |  6595 kB/s | 28180 kB/s |
+| Krawczyk noasm |  5202 kB/s |  4956 kB/s |
+| Krawczyk asm   | 38994 kB/s | 36987 kB/s |
+| Rabin noasm    | 33628 kB/s | 23388 kB/s |
+| Rabin asm      | 67175 kB/s | 61071 kB/s |
+
+Note that after several rewrites, even the handwritten JavaScript versions are much faster now, with the exception of Krawczyk, which is due to Salsa20 noasm still being slow.
+
 ## Licence
 
 © 2016-2018 AIT Austrian Institute of Technology  
